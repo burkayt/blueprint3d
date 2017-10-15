@@ -274,7 +274,7 @@ abstract class Item extends Mesh {
    *
    * TODO: handle rotated objects better!
    */
-  public getCorners(xDim: number, yDim: number, position: Vector3) {
+  public getCorners(xDim: string, yDim: string, position: Vector3) {
 
     position = position || this.position;
 

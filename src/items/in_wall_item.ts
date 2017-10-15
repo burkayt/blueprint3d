@@ -13,7 +13,7 @@ abstract class InWallItem extends WallItem {
   /** */
   public getWallOffset() {
     // fudge factor so it saves to the right wall
-    return -this.currentWallEdge.offset + 0.5;
+    return - this.currentWallEdge!.offset + 0.5;
   }
 }
 

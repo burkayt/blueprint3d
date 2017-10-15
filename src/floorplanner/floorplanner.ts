@@ -19,7 +19,7 @@ export class Floorplanner {
   public activeWall: Wall | null;
 
   /** */
-  public activeCorner: Corner;
+  public activeCorner: Corner | null;
 
   /** */
   public originX = 0;
@@ -34,7 +34,7 @@ export class Floorplanner {
   public targetY = 0;
 
   /** drawing state */
-  public lastNode: Point | null;
+  public lastNode: Corner | null;
 
   /** */
   private wallWidth: number;
@@ -250,7 +250,7 @@ export class Floorplanner {
     // drawing
     if (this.mode === floorplannerModes.DRAW && !this.mouseMoved) {
       let corner = this.floorplan.newCorner(this.targetX, this.targetY);
-      if (this.lastNode != null) {
+      if (this.lastNode) {
         this.floorplan.newWall(this.lastNode, corner);
       }
       if (corner.mergeWithIntersected() && this.lastNode != null) {
