@@ -1,9 +1,5 @@
-/// <reference path="../../lib/three.d.ts" />
-/// <reference path="../model/model.ts" />
-/// <reference path="item.ts" />
-/// <reference path="metadata.ts" />
 
-module BP3D.Items {
+namespace BP3D.Items {
   /**
    * A Floor Item is an entity to be placed related to a floor.
    */

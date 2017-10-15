@@ -1,9 +1,6 @@
-/// <reference path="../../lib/three.d.ts" />
-/// <reference path="../../lib/jQuery.d.ts" />
-/// <reference path="../core/utils.ts" />
-/// <reference path="../items/factory.ts" />
+import {Geometry, JSONLoader, Material, Mesh, MeshFaceMaterial, MultiMaterial, Vector3} from 'three';
 
-module BP3D.Model {
+namespace BP3D.Model {
   /**
    * The Scene is a manager of Items and also links to a ThreeJS scene.
    */
@@ -19,7 +16,7 @@ module BP3D.Model {
     public needsUpdate = false;
 
     /** The Json loader. */
-    private loader: THREE.JSONLoader;
+    private loader: JSONLoader;
 
     /** */
     private itemLoadingCallbacks = $.Callbacks();
@@ -39,21 +36,21 @@ module BP3D.Model {
       this.scene = new THREE.Scene();
 
       // init item loader
-      this.loader = new THREE.JSONLoader();
+      this.loader = new JSONLoader();
       this.loader.crossOrigin = "";
     }
 
     /** Adds a non-item, basically a mesh, to the scene.
      * @param mesh The mesh to be added.
      */
-    public add(mesh: THREE.Mesh) {
+    public add(mesh: Mesh) {
       this.scene.add(mesh);
     }
 
     /** Removes a non-item, basically a mesh, from the scene.
      * @param mesh The mesh to be removed.
      */
-    public remove(mesh: THREE.Mesh) {
+    public remove(mesh: Mesh) {
       this.scene.remove(mesh);
       Core.Utils.removeValue(this.items, mesh);
     }
@@ -115,14 +112,14 @@ module BP3D.Model {
      * @param scale The initial scaling.
      * @param fixed True if fixed.
      */
-    public addItem(itemType: number, fileName: string, metadata, position: THREE.Vector3, rotation: number, scale: THREE.Vector3, fixed: boolean) {
+    public addItem(itemType: number, fileName: string, metadata, position: Vector3, rotation: number, scale: Vector3, fixed: boolean) {
       itemType = itemType || 1;
       var scope = this;
-      var loaderCallback = function (geometry: THREE.Geometry, materials: THREE.Material[]) {
+      var loaderCallback = function (geometry: Geometry, materials: Material[]) {
         var item = new (Items.Factory.getClass(itemType))(
           scope.model,
           metadata, geometry,
-          new THREE.MeshFaceMaterial(materials),
+          new MultiMaterial(materials),
           position, rotation, scale
         );
         item.fixed = fixed || false;
@@ -136,7 +133,7 @@ module BP3D.Model {
       this.loader.load(
         fileName,
         loaderCallback,
-        undefined // TODO_Ekki 
+        undefined // TODO_Ekki
       );
     }
   }

@@ -1,9 +1,5 @@
-/// <reference path="../../lib/jQuery.d.ts" />
-/// <reference path="../core/utils.ts" />
-/// <reference path="floorplan.ts" />
-/// <reference path="wall.ts" />
 
-module BP3D.Model {
+namespace BP3D.Model {
   /** */
   const cornerTolerance: number = 20;
 
@@ -27,7 +23,7 @@ module BP3D.Model {
     /** Callbacks to be fired in case of action. */
     private action_callbacks = $.Callbacks();
 
-    /** Constructs a corner. 
+    /** Constructs a corner.
      * @param floorplan The associated floorplan.
      * @param x X coordinate.
      * @param y Y coordinate.
@@ -75,7 +71,7 @@ module BP3D.Model {
     }
 
     /**
-     * 
+     *
      */
     public snapToAxis(tolerance: number): { x: boolean, y: boolean } {
       // try to snap this corner to an axis
@@ -179,7 +175,7 @@ module BP3D.Model {
     }
 
     /**
-     * 
+     *
      */
     public distanceFrom(x: number, y: number): number {
       var distance = Core.Utils.distance(x, y, this.x, this.y);
@@ -263,7 +259,7 @@ module BP3D.Model {
     }
 
     /**
-     * 
+     *
      */
     private combineWithCorner(corner: Corner) {
       // update position to other corner's
@@ -319,7 +315,7 @@ module BP3D.Model {
       var wallStartpoints = {};
       for (var i = this.wallStarts.length - 1; i >= 0; i--) {
         if (this.wallStarts[i].getEnd() === this) {
-          // remove zero length wall 
+          // remove zero length wall
           this.wallStarts[i].remove();
         } else if (this.wallStarts[i].getEnd().id in wallEndpoints) {
           // remove duplicated wall
@@ -330,7 +326,7 @@ module BP3D.Model {
       }
       for (var i = this.wallEnds.length - 1; i >= 0; i--) {
         if (this.wallEnds[i].getStart() === this) {
-          // removed zero length wall 
+          // removed zero length wall
           this.wallEnds[i].remove();
         } else if (this.wallEnds[i].getStart().id in wallStartpoints) {
           // removed duplicated wall

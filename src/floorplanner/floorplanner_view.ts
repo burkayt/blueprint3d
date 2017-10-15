@@ -1,14 +1,5 @@
-/// <reference path="../../lib/jQuery.d.ts" />
-/// <reference path="../core/configuration.ts" />
-/// <reference path="../core/dimensioning.ts" />
-/// <reference path="../core/utils.ts" />
-/// <reference path="../model/floorplan.ts" />
-/// <reference path="../model/half_edge.ts" />
-/// <reference path="../model/model.ts" />
-/// <reference path="../model/wall.ts" />
-/// <reference path="floorplanner.ts" />
 
-module BP3D.Floorplanner {
+namespace BP3D.Floorplanner {
   /** */
   export const floorplannerModes = {
     MOVE: 0,
@@ -144,7 +135,7 @@ module BP3D.Floorplanner {
     }
 
     /** */
-    private drawEdgeLabel(edge: Model.HalfEdge) {
+    private drawEdgeLabel(edge: HalfEdge) {
       var pos = edge.interiorCenter();
       var length = edge.interiorDistance();
       if (length < 60) {
@@ -167,7 +158,7 @@ module BP3D.Floorplanner {
     }
 
     /** */
-    private drawEdge(edge: Model.HalfEdge, hover) {
+    private drawEdge(edge: HalfEdge, hover) {
       var color = edgeColor;
       if (hover && this.viewmodel.mode == floorplannerModes.DELETE) {
         color = deleteColor;

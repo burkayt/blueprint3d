@@ -1,9 +1,4 @@
-/// <reference path="../../lib/three.d.ts" />
-/// <reference path="../core/utils.ts" />
-/// <reference path="../model/half_edge.ts" />
-/// <reference path="../model/model.ts" />
-/// <reference path="item.ts" />
-/// <reference path="metadata.ts" />
+import {Mesh} from 'three';
 
 namespace BP3D.Items {
   /**
@@ -43,7 +38,7 @@ namespace BP3D.Items {
     /** */
     protected backVisible = false;
 
-    constructor(model: Model.Model, metadata: Metadata, geometry: THREE.Geometry, material: THREE.MeshFaceMaterial, position: THREE.Vector3, rotation: number, scale: THREE.Vector3) {
+    constructor(model: Model.Model, metadata: Metadata, geometry: THREE.Geometry, material: THREE.MultiMaterial, position: THREE.Vector3, rotation: number, scale: THREE.Vector3) {
       super(model, metadata, geometry, material, position, rotation, scale);
 
       this.allowRotate = false;

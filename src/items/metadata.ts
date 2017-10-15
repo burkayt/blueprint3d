@@ -1,4 +1,4 @@
-module BP3D.Items {
+namespace BP3D.Items {
   /** Meta data for items. */
   export interface Metadata {
     /** Name of the item. */
@@ -6,7 +6,7 @@ module BP3D.Items {
 
     /** Type of the item. */
     itemType?: number;
-    
+
     /** Url of the model. */
     modelUrl?: string;
 

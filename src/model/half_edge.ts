@@ -1,13 +1,11 @@
-/// <reference path="../../lib/three.d.ts" />
-/// <reference path="../../lib/jQuery.d.ts" />
-/// <reference path="../core/utils.ts" />
+import {Face3, Geometry, Matrix4, Mesh, MeshBasicMaterial, Vector3} from 'three';
 
-module BP3D.Model {
+namespace BP3D.Model {
   /**
    * Half Edges are created by Room.
-   * 
+   *
    * Once rooms have been identified, Half Edges are created for each interior wall.
-   * 
+   *
    * A wall can have two half edges if it is visible from both sides.
    */
   export class HalfEdge {
@@ -25,19 +23,19 @@ module BP3D.Model {
     public height: number;
 
     /** used for intersection testing... not convinced this belongs here */
-    public plane: THREE.Mesh = null;
+    public plane: Mesh = null;
 
     /** transform from world coords to wall planes (z=0) */
-    public interiorTransform = new THREE.Matrix4();
+    public interiorTransform = new Matrix4();
 
     /** transform from world coords to wall planes (z=0) */
-    public invInteriorTransform = new THREE.Matrix4();
+    public invInteriorTransform = new Matrix4();
 
     /** transform from world coords to wall planes (z=0) */
-    private exteriorTransform = new THREE.Matrix4();
+    private exteriorTransform = new Matrix4();
 
     /** transform from world coords to wall planes (z=0) */
-    private invExteriorTransform = new THREE.Matrix4();
+    private invExteriorTransform = new Matrix4();
 
     /** */
     public redrawCallbacks = $.Callbacks();
@@ -62,7 +60,7 @@ module BP3D.Model {
     }
 
     /**
-     * 
+     *
      */
     public getTexture() {
       if (this.front) {
@@ -73,7 +71,7 @@ module BP3D.Model {
     }
 
     /**
-     * 
+     *
      */
     public setTexture(textureUrl: string, textureStretch: boolean, textureScale: number) {
       var texture = {
@@ -89,13 +87,13 @@ module BP3D.Model {
       this.redrawCallbacks.fire();
     }
 
-    /** 
+    /**
      * this feels hacky, but need wall items
      */
     public generatePlane = function () {
 
       function transformCorner(corner) {
-        return new THREE.Vector3(corner.x, 0, corner.y);
+        return new Vector3(corner.x, 0, corner.y);
       }
 
       var v1 = transformCorner(this.interiorStart());
@@ -105,16 +103,16 @@ module BP3D.Model {
       var v4 = v1.clone();
       v4.y = this.wall.height;
 
-      var geometry = new THREE.Geometry();
+      var geometry = new Geometry();
       geometry.vertices = [v1, v2, v3, v4];
 
-      geometry.faces.push(new THREE.Face3(0, 1, 2));
-      geometry.faces.push(new THREE.Face3(0, 2, 3));
+      geometry.faces.push(new Face3(0, 1, 2));
+      geometry.faces.push(new Face3(0, 2, 3));
       geometry.computeFaceNormals();
       geometry.computeBoundingBox();
 
-      this.plane = new THREE.Mesh(geometry,
-        new THREE.MeshBasicMaterial());
+      this.plane = new Mesh(geometry,
+        new MeshBasicMaterial());
       this.plane.visible = false;
       this.plane.edge = this; // js monkey patch
 
@@ -139,9 +137,9 @@ module BP3D.Model {
 
       var angle = Core.Utils.angle(1, 0, v2.x - v1.x, v2.y - v1.y);
 
-      var tt = new THREE.Matrix4();
+      var tt = new Matrix4();
       tt.makeTranslation(-v1.x, 0, -v1.y);
-      var tr = new THREE.Matrix4();
+      var tr = new Matrix4();
       tr.makeRotationY(-angle);
       transform.multiplyMatrices(tr, tt);
       invTransform.getInverse(transform);
@@ -179,9 +177,9 @@ module BP3D.Model {
 
     private getOppositeEdge(): HalfEdge {
       if (this.front) {
-        return this.wall.backEdge;
+        return <HalfEdge>this.wall.backEdge;
       } else {
-        return this.wall.frontEdge;
+        return <HalfEdge>this.wall.frontEdge;
       }
     }
 
@@ -233,7 +231,7 @@ module BP3D.Model {
         this.exteriorEnd(), this.exteriorStart()];
     }
 
-    /** 
+    /**
      * Gets CCW angle from v1 to v2
      */
     private halfAngleVector(v1: HalfEdge, v2: HalfEdge): { x: number, y: number } {

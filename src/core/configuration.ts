@@ -1,7 +1,7 @@
-/// <reference path="dimensioning.ts" />
 
-module BP3D.Core {
-  // GENERAL:
+
+namespace BP3D.Core {
+    // GENERAL:
 
   /** The dimensioning unit for 2D floorplan measurements. */
   export const configDimUnit = "dimUnit";

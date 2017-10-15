@@ -1,11 +1,5 @@
-/// <reference path="floor_item.ts" />
-/// <reference path="in_wall_floor_item.ts" />
-/// <reference path="in_wall_item.ts" />
-/// <reference path="on_floor_item.ts" />
-/// <reference path="wall_floor_item.ts" />
-/// <reference path="wall_item.ts" />
 
-module BP3D.Items {
+namespace BP3D.Items {
   /** Enumeration of item types. */
   const item_types = {
     1: Items.FloorItem,
@@ -19,7 +13,7 @@ module BP3D.Items {
   /** Factory class to create items. */
   export class Factory {
     /** Gets the class for the specified item. */
-    public static getClass(itemType) { 
+    public static getClass(itemType) {
       return item_types[itemType]
     }
   }

@@ -1,35 +1,34 @@
-/// <reference path="../../lib/jQuery.d.ts" />
-/// <reference path="../../lib/three.d.ts" />
-/// <reference path="../core/utils.ts" />
+import {Mesh, MeshBasicMaterial, PlaneGeometry, Raycaster, Vector2, Vector3} from 'three';
 
-module BP3D.Three {
-  export var Controller = function (three, model, camera, element, controls, hud) {
+namespace BP3D.Three {
+  import Utils = BP3D.Core.Utils;
+  export let Controller = function (three, model, camera, element, controls, hud) {
 
-    var scope = this;
+    let scope = this;
 
     this.enabled = true;
 
-    var three = three;
-    var model = model;
-    var scene = model.scene;
-    var element = element;
-    var camera = camera;
-    var controls = controls;
-    var hud = hud;
+    let three = three;
+    let model = model;
+    let scene = model.scene;
+    let element = element;
+    let camera = camera;
+    let controls = controls;
+    let hud = hud;
 
-    var plane; // ground plane used for intersection testing
+    let plane; // ground plane used for intersection testing
 
-    var mouse;
-    var intersectedObject;
-    var mouseoverObject;
-    var selectedObject;
+    let mouse;
+    let intersectedObject;
+    let mouseoverObject;
+    let selectedObject;
 
-    var mouseDown = false;
-    var mouseMoved = false; // has mouse moved since down click
+    let mouseDown = false;
+    let mouseMoved = false; // has mouse moved since down click
 
-    var rotateMouseOver = false;
+    let rotateMouseOver = false;
 
-    var states = {
+    let states = {
       UNSELECTED: 0, // no object selected
       SELECTED: 1, // selected but inactive
       DRAGGING: 2, // performing an action while mouse depressed
@@ -37,7 +36,7 @@ module BP3D.Three {
       ROTATING_FREE: 4, // rotating with mouse up
       PANNING: 5
     };
-    var state = states.UNSELECTED;
+    let state = states.UNSELECTED;
 
     this.needsUpdate = true;
 
@@ -46,7 +45,7 @@ module BP3D.Three {
       element.mouseup(mouseUpEvent);
       element.mousemove(mouseMoveEvent);
 
-      mouse = new THREE.Vector2();
+      mouse = new Vector2();
 
       scene.itemRemovedCallbacks.add(itemRemoved);
       scene.itemLoadedCallbacks.add(itemLoaded);
@@ -58,9 +57,9 @@ module BP3D.Three {
       if (!item.position_set) {
         scope.setSelectedObject(item);
         switchState(states.DRAGGING);
-        var pos = item.position.clone();
+        let pos = item.position.clone();
         pos.y = 0;
-        var vec = three.projectVector(pos);
+        let vec = three.projectVector(pos);
         clickPressed(vec);
       }
       item.position_set = true;
@@ -68,7 +67,7 @@ module BP3D.Three {
 
     function clickPressed(vec2?) {
       vec2 = vec2 || mouse;
-      var intersection = scope.itemIntersection(mouse, selectedObject);
+      let intersection = scope.itemIntersection(mouse, selectedObject);
       if (intersection) {
         selectedObject.clickPressed(intersection);
       }
@@ -76,7 +75,7 @@ module BP3D.Three {
 
     function clickDragged(vec2?) {
       vec2 = vec2 || mouse;
-      var intersection = scope.itemIntersection(mouse, selectedObject);
+      let intersection = scope.itemIntersection(mouse, selectedObject);
       if (intersection) {
         if (scope.isRotating()) {
           selectedObject.rotate(intersection);
@@ -97,10 +96,10 @@ module BP3D.Three {
 
     function setGroundPlane() {
       // ground plane used to find intersections
-      var size = 10000;
-      plane = new THREE.Mesh(
-        new THREE.PlaneGeometry(size, size),
-        new THREE.MeshBasicMaterial());
+      let size = 10000;
+      plane = new Mesh(
+        new PlaneGeometry(size, size),
+        new MeshBasicMaterial());
       plane.rotation.x = -Math.PI / 2;
       plane.visible = false;
       scene.add(plane);
@@ -111,21 +110,21 @@ module BP3D.Three {
       // double click on a wall or floor brings up texture change modal
       if (state == states.UNSELECTED && mouseoverObject == null) {
         // check walls
-        var wallEdgePlanes = model.floorplan.wallEdgePlanes();
-        var wallIntersects = scope.getIntersections(
+        let wallEdgePlanes = model.floorplan.wallEdgePlanes();
+        let wallIntersects = scope.getIntersections(
           mouse, wallEdgePlanes, true);
         if (wallIntersects.length > 0) {
-          var wall = wallIntersects[0].object.edge;
+          let wall = wallIntersects[0].object.edge;
           three.wallClicked.fire(wall);
           return;
         }
 
         // check floors
-        var floorPlanes = model.floorplan.floorPlanes();
-        var floorIntersects = scope.getIntersections(
+        let floorPlanes = model.floorplan.floorPlanes();
+        let floorIntersects = scope.getIntersections(
           mouse, floorPlanes, false);
         if (floorIntersects.length > 0) {
-          var room = floorIntersects[0].object.room;
+          let room = floorIntersects[0].object.room;
           three.floorClicked.fire(room);
           return;
         }
@@ -295,9 +294,9 @@ module BP3D.Three {
     function updateIntersections() {
 
       // check the rotate arrow
-      var hudObject = hud.getObject();
+      let hudObject = hud.getObject();
       if (hudObject != null) {
-        var hudIntersects = scope.getIntersections(
+        let hudIntersects = scope.getIntersections(
           mouse,
           hudObject,
           false, false, true);
@@ -312,8 +311,8 @@ module BP3D.Three {
       hud.setMouseover(false);
 
       // check objects
-      var items = model.scene.getItems();
-      var intersects = scope.getIntersections(
+      let items = model.scene.getItems();
+      let intersects = scope.getIntersections(
         mouse,
         items,
         false, true);
@@ -327,7 +326,7 @@ module BP3D.Three {
 
     // sets coords to -1 to 1
     function normalizeVector2(vec2) {
-      var retVec = new THREE.Vector2();
+      let retVec = new Vector2();
       retVec.x = ((vec2.x - three.widthMargin) / (window.innerWidth - three.widthMargin)) * 2 - 1;
       retVec.y = -((vec2.y - three.heightMargin) / (window.innerHeight - three.heightMargin)) * 2 + 1;
       return retVec;
@@ -335,8 +334,8 @@ module BP3D.Three {
 
     //
     function mouseToVec3(vec2) {
-      var normVec2 = normalizeVector2(vec2)
-      var vector = new THREE.Vector3(
+      let normVec2 = normalizeVector2(vec2)
+      let vector = new Vector3(
         normVec2.x, normVec2.y, 0.5);
       vector.unproject(camera);
       return vector;
@@ -344,8 +343,8 @@ module BP3D.Three {
 
     // returns the first intersection object
     this.itemIntersection = function (vec2, item) {
-      var customIntersections = item.customIntersectionPlanes();
-      var intersections = null;
+      let customIntersections = item.customIntersectionPlanes();
+      let intersections = null;
       if (customIntersections && customIntersections.length > 0) {
         intersections = this.getIntersections(vec2, customIntersections, true);
       } else {
@@ -362,7 +361,7 @@ module BP3D.Three {
     // objects can be an array of objects or a single object
     this.getIntersections = function (vec2, objects, filterByNormals, onlyVisible, recursive, linePrecision) {
 
-      var vector = mouseToVec3(vec2);
+      let vector = mouseToVec3(vec2);
 
       onlyVisible = onlyVisible || false;
       filterByNormals = filterByNormals || false;
@@ -370,12 +369,12 @@ module BP3D.Three {
       linePrecision = linePrecision || 20;
 
 
-      var direction = vector.sub(camera.position).normalize();
-      var raycaster = new THREE.Raycaster(
+      let direction = vector.sub(camera.position).normalize();
+      let raycaster = new Raycaster(
         camera.position,
         direction);
       raycaster.linePrecision = linePrecision;
-      var intersections;
+      let intersections;
       if (objects instanceof Array) {
         intersections = raycaster.intersectObjects(objects, recursive);
       } else {
@@ -383,15 +382,15 @@ module BP3D.Three {
       }
       // filter by visible, if true
       if (onlyVisible) {
-        intersections = Core.Utils.removeIf(intersections, function (intersection) {
+        intersections = Utils.removeIf(intersections, function (intersection) {
           return !intersection.object.visible;
         });
       }
 
       // filter by normals, if true
       if (filterByNormals) {
-        intersections = Core.Utils.removeIf(intersections, function (intersection) {
-          var dot = intersection.face.normal.dot(direction);
+        intersections = Utils.removeIf(intersections, function (intersection) {
+          let dot = intersection.face.normal.dot(direction);
           return (dot > 0)
         });
       }

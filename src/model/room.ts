@@ -1,9 +1,3 @@
-/// <reference path="../../lib/three.d.ts" />
-/// <reference path="../../lib/jQuery.d.ts" />
-/// <reference path="../core/utils.ts" />
-/// <reference path="corner.ts" />
-/// <reference path="floorplan.ts" />
-/// <reference path="half_edge.ts" />
 
 /*
 TODO
@@ -12,7 +6,7 @@ var segseg = require('segseg')
 var Polygon = require('polygon')
 */
 
-module BP3D.Model {
+namespace BP3D.Model {
 
   /** Default texture to be used if nothing is provided. */
   const defaultRoomTexture = {
@@ -20,8 +14,8 @@ module BP3D.Model {
     scale: 400
   }
 
-  /** 
-   * A Room is the combination of a Floorplan with a floor plane. 
+  /**
+   * A Room is the combination of a Floorplan with a floor plane.
    */
   export class Room {
 
@@ -67,7 +61,7 @@ module BP3D.Model {
       return tex || defaultRoomTexture;
     }
 
-    /** 
+    /**
      * textureStretch always true, just an argument for consistency with walls
      */
     private setTexture(textureUrl: string, textureStretch, textureScale: number) {
@@ -115,7 +109,7 @@ module BP3D.Model {
       }
     }
 
-    /** 
+    /**
      * Populates each wall's half edge relating to this room
      * this creates a fancy doubly connected edge list (DCEL)
      */

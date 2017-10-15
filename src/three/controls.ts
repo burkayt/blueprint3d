@@ -1,5 +1,5 @@
 /**
-This file is a modified version of THREE.OrbitControls
+This file is a modified version of OrbitControls
 Contributors:
  * @author qiao / https://github.com/qiao
  * @author mrdoob / http://mrdoob.com
@@ -7,11 +7,10 @@ Contributors:
  * @author WestLangley / http://github.com/WestLangley
  * @author erich666 / http://erichaines.com
  */
+import {Vector2, Vector3} from 'three';
 
-/// <reference path="../../lib/jQuery.d.ts" />
-/// <reference path="../../lib/three.d.ts" />
 
-module BP3D.Three {
+namespace BP3D.Three {
   export var Controls = function (object, domElement) {
 
     this.object = object;
@@ -22,7 +21,7 @@ module BP3D.Three {
 
     // "target" sets the location of focus, where the control orbits around
     // and where it pans with respect to.
-    this.target = new THREE.Vector3();
+    this.target = new Vector3();
     // center is old, deprecated; use "target" instead
     this.center = this.target;
 
@@ -66,22 +65,22 @@ module BP3D.Three {
 
     var EPS = 0.000001;
 
-    var rotateStart = new THREE.Vector2();
-    var rotateEnd = new THREE.Vector2();
-    var rotateDelta = new THREE.Vector2();
+    var rotateStart = new Vector2();
+    var rotateEnd = new Vector2();
+    var rotateDelta = new Vector2();
 
-    var panStart = new THREE.Vector2();
-    var panEnd = new THREE.Vector2();
-    var panDelta = new THREE.Vector2();
+    var panStart = new Vector2();
+    var panEnd = new Vector2();
+    var panDelta = new Vector2();
 
-    var dollyStart = new THREE.Vector2();
-    var dollyEnd = new THREE.Vector2();
-    var dollyDelta = new THREE.Vector2();
+    var dollyStart = new Vector2();
+    var dollyEnd = new Vector2();
+    var dollyDelta = new Vector2();
 
     var phiDelta = 0;
     var thetaDelta = 0;
     var scale = 1;
-    var pan = new THREE.Vector3();
+    var pan = new Vector3();
 
     var STATE = { NONE: -1, ROTATE: 0, DOLLY: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_DOLLY: 4, TOUCH_PAN: 5 };
     var state = STATE.NONE;
@@ -95,7 +94,7 @@ module BP3D.Three {
     };
 
     this.panTo = function (vec3) {
-      var newTarget = new THREE.Vector3(vec3.x, scope.target.y, vec3.z);
+      var newTarget = new Vector3(vec3.x, scope.target.y, vec3.z);
       var delta = scope.target.clone().sub(newTarget);
       pan.sub(delta);
       scope.update();
@@ -118,7 +117,7 @@ module BP3D.Three {
     // pass in distance in world space to move left
     this.panLeft = function (distance) {
 
-      var panOffset = new THREE.Vector3();
+      var panOffset = new Vector3();
       var te = this.object.matrix.elements;
       // get X column of matrix
       panOffset.set(te[0], 0, te[2]);
@@ -133,7 +132,7 @@ module BP3D.Three {
     // pass in distance in world space to move up
     this.panUp = function (distance) {
 
-      var panOffset = new THREE.Vector3();
+      var panOffset = new Vector3();
       var te = this.object.matrix.elements;
       // get Y column of matrix
       panOffset.set(te[4], 0, te[6]);
@@ -176,7 +175,7 @@ module BP3D.Three {
     };
 
     this.panXY = function (x, y) {
-      scope.pan(new THREE.Vector2(x, y));
+      scope.pan(new Vector2(x, y));
     }
 
     this.dollyIn = function (dollyScale) {
@@ -381,16 +380,16 @@ module BP3D.Three {
       switch (event.keyCode) {
 
         case scope.keys.UP:
-          scope.pan(new THREE.Vector2(0, scope.keyPanSpeed));
+          scope.pan(new Vector2(0, scope.keyPanSpeed));
           break;
         case scope.keys.BOTTOM:
-          scope.pan(new THREE.Vector2(0, -scope.keyPanSpeed));
+          scope.pan(new Vector2(0, -scope.keyPanSpeed));
           break;
         case scope.keys.LEFT:
-          scope.pan(new THREE.Vector2(scope.keyPanSpeed, 0));
+          scope.pan(new Vector2(scope.keyPanSpeed, 0));
           break;
         case scope.keys.RIGHT:
-          scope.pan(new THREE.Vector2(-scope.keyPanSpeed, 0));
+          scope.pan(new Vector2(-scope.keyPanSpeed, 0));
           break;
       }
 

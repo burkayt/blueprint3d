@@ -1,4 +1,4 @@
-module BP3D.Core {
+namespace BP3D.Core {
 
   /** Enumeration of log contexts. */
   export enum ELogContext {
@@ -57,7 +57,7 @@ module BP3D.Core {
   /** Log the passed message in the context and with given level.
    * @param context The context in which the message should be logged.
    * @param level The level of the message.
-   * @param message The messages to be logged. 
+   * @param message The messages to be logged.
    */
   export function log(context: ELogContext, level: ELogLevel, message: string) {
     if (isLogging(context, level) === false) {

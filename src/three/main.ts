@@ -1,14 +1,8 @@
-/// <reference path="../../lib/jQuery.d.ts" />
-/// <reference path="../../lib/three.d.ts" />
-/// <reference path="controller.ts" />
-/// <reference path="floorPlan.ts" />
-/// <reference path="lights.ts" />
-/// <reference path="skybox.ts" />
-/// <reference path="controls.ts" />
-/// <reference path="hud.ts" />
 
-module BP3D.Three {
-  export var Main = function (model, element, canvasElement, opts) {
+import {ImageUtils, PCFSoftShadowMap, PerspectiveCamera, Vector2, Vector3, WebGLRenderer} from 'three';
+
+namespace BP3D.Three {
+  export var Main = () => function (model, element, canvasElement, opts) {
     var scope = this;
 
     var options = {
@@ -64,26 +58,26 @@ module BP3D.Three {
     this.nothingClicked = $.Callbacks();
 
     function init() {
-      THREE.ImageUtils.crossOrigin = "";
+      ImageUtils.crossOrigin = "";
 
       domElement = scope.element.get(0) // Container
-      camera = new THREE.PerspectiveCamera(45, 1, 1, 10000);
-      renderer = new THREE.WebGLRenderer({
+      camera = new PerspectiveCamera(45, 1, 1, 10000);
+      renderer = new WebGLRenderer({
         antialias: true,
         preserveDrawingBuffer: true // required to support .toDataURL()
       });
       renderer.autoClear = false,
         renderer.shadowMapEnabled = true;
       renderer.shadowMapSoft = true;
-      renderer.shadowMapType = THREE.PCFSoftShadowMap;
+      renderer.shadowMapType = PCFSoftShadowMap;
 
-      var skybox = new Three.Skybox(scene);
+      var skybox = new this.Three.Skybox(scene);
 
-      scope.controls = new Three.Controls(camera, domElement);
+      scope.controls = new this.Three.Controls(camera, domElement);
 
-      hud = new Three.HUD(scope);
+      hud = new this.Three.HUD(scope);
 
-      controller = new Three.Controller(
+      controller = new this.Three.Controller(
         scope, model, camera, scope.element, scope.controls, hud);
 
       domElement.appendChild(renderer.domElement);
@@ -98,9 +92,9 @@ module BP3D.Three {
       scope.centerCamera();
       model.floorplan.fireOnUpdatedRooms(scope.centerCamera);
 
-      var lights = new Three.Lights(scene, model.floorplan);
+      var lights = new this.Three.Lights(scene, model.floorplan);
 
-      floorplan = new Three.Floorplan(scene,
+      floorplan = new this.Three.Floorplan(scene,
         model.floorplan, scope.controls);
 
       animate();
@@ -113,7 +107,7 @@ module BP3D.Three {
         hasClicked = true;
       });
 
-      //canvas = new ThreeCanvas(canvasElement, scope);
+      //canvas = new this.ThreeCanvas(canvasElement, scope);
     }
 
     function spin() {
@@ -184,7 +178,7 @@ module BP3D.Three {
     function animate() {
       var delay = 50;
       setTimeout(function () {
-        requestAnimationFrame(animate);
+        requestAnimationFrame(this.animate);
       }, delay);
       render();
     };
@@ -230,7 +224,7 @@ module BP3D.Three {
       var distance = model.floorplan.getSize().z * 1.5;
 
       var offset = pan.clone().add(
-        new THREE.Vector3(0, distance, distance));
+        new Vector3(0, distance, distance));
       //scope.controls.setOffset(offset);
       camera.position.copy(offset);
 
@@ -245,11 +239,11 @@ module BP3D.Three {
       var widthHalf = scope.elementWidth / 2;
       var heightHalf = scope.elementHeight / 2;
 
-      var vector = new THREE.Vector3();
+      var vector = new Vector3();
       vector.copy(vec3);
       vector.project(camera);
 
-      var vec2 = new THREE.Vector2();
+      var vec2 = new Vector2();
 
       vec2.x = (vector.x * widthHalf) + widthHalf;
       vec2.y = - (vector.y * heightHalf) + heightHalf;

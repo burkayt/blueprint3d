@@ -1,8 +1,21 @@
-/// <reference path="../../lib/jQuery.d.ts" />
-/// <reference path="../../lib/three.d.ts" />
-/// <reference path="../core/utils.ts" />
+import {
+  BackSide,
+  DoubleSide,
+  Face3,
+  FrontSide,
+  Geometry,
+  ImageUtils,
+  Mesh,
+  MeshBasicMaterial,
+  Path,
+  RepeatWrapping,
+  Shape,
+  ShapeGeometry,
+  Vector2,
+  Vector3
+} from 'three';
 
-module BP3D.Three {
+namespace BP3D.Three {
   export var Edge = function (scene, edge, controls) {
     var scope = this;
     var scene = scene;
@@ -15,7 +28,7 @@ module BP3D.Three {
     var basePlanes = []; // always visible
     var texture = null;
 
-    var lightMap = THREE.ImageUtils.loadTexture("rooms/textures/walllightmap.png");
+    var lightMap = ImageUtils.loadTexture("rooms/textures/walllightmap.png");
     var fillerColor = 0xdddddd;
     var sideColor = 0xcccccc;
     var baseColor = 0xdddddd;
@@ -71,12 +84,12 @@ module BP3D.Three {
       var x = end.x - start.x;
       var y = end.y - start.y;
       // rotate 90 degrees CCW
-      var normal = new THREE.Vector3(-y, 0, x);
+      var normal = new Vector3(-y, 0, x);
       normal.normalize();
 
       // setup camera
       var position = controls.object.position.clone();
-      var focus = new THREE.Vector3(
+      var focus = new Vector3(
         (start.x + end.x) / 2.0,
         0,
         (start.y + end.y) / 2.0);
@@ -114,30 +127,30 @@ module BP3D.Three {
       var stretch = textureData.stretch;
       var url = textureData.url;
       var scale = textureData.scale;
-      texture = THREE.ImageUtils.loadTexture(url, null, callback);
+      texture = ImageUtils.loadTexture(url, null, callback);
       if (!stretch) {
         var height = wall.height;
         var width = edge.interiorDistance();
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = RepeatWrapping;
+        texture.wrapS = RepeatWrapping;
         texture.repeat.set(width / scale, height / scale);
         texture.needsUpdate = true;
       }
     }
 
     function updatePlanes() {
-      var wallMaterial = new THREE.MeshBasicMaterial({
+      var wallMaterial = new MeshBasicMaterial({
         color: 0xffffff,
         // ambientColor: 0xffffff, TODO_Ekki
         //ambient: scope.wall.color,
-        side: THREE.FrontSide,
+        side: FrontSide,
         map: texture,
         // lightMap: lightMap TODO_Ekki
       });
 
-      var fillerMaterial = new THREE.MeshBasicMaterial({
+      var fillerMaterial = new MeshBasicMaterial({
         color: fillerColor,
-        side: THREE.DoubleSide
+        side: DoubleSide
       });
 
       // exterior plane
@@ -160,12 +173,12 @@ module BP3D.Three {
       // put into basePlanes since this is always visible
       basePlanes.push(buildFiller(
         edge, 0,
-        THREE.BackSide, baseColor));
+        BackSide, baseColor));
 
       // top
       planes.push(buildFiller(
         edge, wall.height,
-        THREE.DoubleSide, fillerColor));
+        DoubleSide, fillerColor));
 
       // sides
       planes.push(buildSideFillter(
@@ -192,11 +205,11 @@ module BP3D.Three {
         p.applyMatrix4(transform);
       });
 
-      var shape = new THREE.Shape([
-        new THREE.Vector2(points[0].x, points[0].y),
-        new THREE.Vector2(points[1].x, points[1].y),
-        new THREE.Vector2(points[2].x, points[2].y),
-        new THREE.Vector2(points[3].x, points[3].y)
+      var shape = new Shape([
+        new Vector2(points[0].x, points[0].y),
+        new Vector2(points[1].x, points[1].y),
+        new Vector2(points[2].x, points[2].y),
+        new Vector2(points[3].x, points[3].y)
       ]);
 
       // add holes for each wall item
@@ -210,16 +223,16 @@ module BP3D.Three {
         max.add(pos);
 
         var holePoints = [
-          new THREE.Vector2(min.x, min.y),
-          new THREE.Vector2(max.x, min.y),
-          new THREE.Vector2(max.x, max.y),
-          new THREE.Vector2(min.x, max.y)
+          new Vector2(min.x, min.y),
+          new Vector2(max.x, min.y),
+          new Vector2(max.x, max.y),
+          new Vector2(min.x, max.y)
         ];
 
-        shape.holes.push(new THREE.Path(holePoints));
+        shape.holes.push(new Path(holePoints));
       });
 
-      var geometry = new THREE.ShapeGeometry(shape);
+      var geometry = new ShapeGeometry(shape);
 
       geometry.vertices.forEach((v) => {
         v.applyMatrix4(invTransform);
@@ -233,7 +246,7 @@ module BP3D.Three {
       function vertexToUv(vertex) {
         var x = Core.Utils.distance(v1.x, v1.z, vertex.x, vertex.z) / totalDistance;
         var y = vertex.y / height;
-        return new THREE.Vector2(x, y);
+        return new Vector2(x, y);
       }
 
       geometry.faces.forEach((face) => {
@@ -251,7 +264,7 @@ module BP3D.Three {
       geometry.computeFaceNormals();
       geometry.computeVertexNormals();
 
-      var mesh = new THREE.Mesh(
+      var mesh = new Mesh(
         geometry,
         material);
 
@@ -266,19 +279,19 @@ module BP3D.Three {
         toVec3(p1, height)
       ];
 
-      var geometry = new THREE.Geometry();
+      var geometry = new Geometry();
       points.forEach((p) => {
         geometry.vertices.push(p);
       });
-      geometry.faces.push(new THREE.Face3(0, 1, 2));
-      geometry.faces.push(new THREE.Face3(0, 2, 3));
+      geometry.faces.push(new Face3(0, 1, 2));
+      geometry.faces.push(new Face3(0, 2, 3));
 
-      var fillerMaterial = new THREE.MeshBasicMaterial({
+      var fillerMaterial = new MeshBasicMaterial({
         color: color,
-        side: THREE.DoubleSide
+        side: DoubleSide
       });
 
-      var filler = new THREE.Mesh(geometry, fillerMaterial);
+      var filler = new Mesh(geometry, fillerMaterial);
       return filler;
     }
 
@@ -290,27 +303,27 @@ module BP3D.Three {
         toVec2(edge.interiorStart())
       ];
 
-      var fillerMaterial = new THREE.MeshBasicMaterial({
+      var fillerMaterial = new MeshBasicMaterial({
         color: color,
         side: side
       });
 
-      var shape = new THREE.Shape(points);
-      var geometry = new THREE.ShapeGeometry(shape);
+      var shape = new Shape(points);
+      var geometry = new ShapeGeometry(shape);
 
-      var filler = new THREE.Mesh(geometry, fillerMaterial);
+      var filler = new Mesh(geometry, fillerMaterial);
       filler.rotation.set(Math.PI / 2, 0, 0);
       filler.position.y = height;
       return filler;
     }
 
     function toVec2(pos) {
-      return new THREE.Vector2(pos.x, pos.y);
+      return new Vector2(pos.x, pos.y);
     }
 
     function toVec3(pos, height?) {
       height = height || 0;
-      return new THREE.Vector3(pos.x, height, pos.y);
+      return new Vector3(pos.x, height, pos.y);
     }
 
     init();

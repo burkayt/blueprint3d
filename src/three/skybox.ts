@@ -1,20 +1,21 @@
-/// <reference path="../../lib/three.d.ts" />
 
-module BP3D.Three {
-  export var Skybox = function (scene) {
+import {BackSide, Color, Mesh, ShaderMaterial, SphereGeometry} from 'three';
 
-    var scope = this;
+namespace BP3D.Three {
+  export let Skybox = function (scene) {
 
-    var scene = scene;
+    let scope = this;
 
-    var topColor = 0xffffff;//0xD8ECF9
-    var bottomColor = 0xe9e9e9; //0xf9f9f9;//0x565e63
-    var verticalOffset = 500
-    var sphereRadius = 4000
-    var widthSegments = 32
-    var heightSegments = 15
+    let scene = scene;
 
-    var vertexShader = [
+    let topColor = 0xffffff;//0xD8ECF9
+    let bottomColor = 0xe9e9e9; //0xf9f9f9;//0x565e63
+    let verticalOffset = 500
+    let sphereRadius = 4000
+    let widthSegments = 32
+    let heightSegments = 15
+
+    let vertexShader = [
       "varying vec3 vWorldPosition;",
       "void main() {",
       "  vec4 worldPosition = modelMatrix * vec4( position, 1.0 );",
@@ -23,7 +24,7 @@ module BP3D.Three {
       "}"
     ].join('\n');
 
-    var fragmentShader = [
+    let fragmentShader = [
       "uniform vec3 topColor;",
       "uniform vec3 bottomColor;",
       "uniform float offset;",
@@ -36,14 +37,14 @@ module BP3D.Three {
 
     function init() {
 
-      var uniforms = {
+      let uniforms = {
         topColor: {
           type: "c",
-          value: new THREE.Color(topColor)
+          value: new Color(topColor)
         },
         bottomColor: {
           type: "c",
-          value: new THREE.Color(bottomColor)
+          value: new Color(bottomColor)
         },
         offset: {
           type: "f",
@@ -51,16 +52,16 @@ module BP3D.Three {
         }
       }
 
-      var skyGeo = new THREE.SphereGeometry(
+      let skyGeo = new SphereGeometry(
         sphereRadius, widthSegments, heightSegments);
-      var skyMat = new THREE.ShaderMaterial({
+      let skyMat = new ShaderMaterial({
         vertexShader: vertexShader,
         fragmentShader: fragmentShader,
         uniforms: uniforms,
-        side: THREE.BackSide
+        side: BackSide
       });
 
-      var sky = new THREE.Mesh(skyGeo, skyMat);
+      let sky = new Mesh(skyGeo, skyMat);
       scene.add(sky);
     }
 

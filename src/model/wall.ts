@@ -1,12 +1,5 @@
-/// <reference path="../../lib/three.d.ts" />
-/// <reference path="../../lib/jQuery.d.ts" />
-/// <reference path="../core/configuration.ts" />
-/// <reference path="../core/utils.ts" />
-/// <reference path="../items/item.ts" />
-/// <reference path="corner.ts" />
-/// <reference path="half_edge.ts" />
 
-module BP3D.Model {
+namespace BP3D.Model {
   /** The default wall texture. */
   const defaultWallTexture = {
     url: "rooms/textures/wallmap.png",
@@ -14,9 +7,9 @@ module BP3D.Model {
     scale: 0
   }
 
-  /** 
+  /**
    * A Wall is the basic element to create Rooms.
-   * 
+   *
    * Walls consists of two half edges.
    */
   export class Wall {
@@ -25,10 +18,10 @@ module BP3D.Model {
     private id: string;
 
     /** Front is the plane from start to end. */
-    public frontEdge: HalfEdge = null;
+    public frontEdge = null;
 
     /** Back is the plane from end to start. */
-    public backEdge: HalfEdge = null;
+    public backEdge = null;
 
     /** */
     public orphan = false;
@@ -60,7 +53,7 @@ module BP3D.Model {
     /** Actions to be applied explicitly. */
     private action_callbacks = $.Callbacks();
 
-    /** 
+    /**
      * Constructs a new wall.
      * @param start Start corner.
      * @param end End corner.

@@ -1,16 +1,10 @@
-/// <reference path="../../lib/jQuery.d.ts" />
-/// <reference path="../../lib/three.d.ts" />
-/// <reference path="../core/utils.ts" />
-/// <reference path="wall.ts" />
-/// <reference path="corner.ts" />
-/// <reference path="room.ts" />
-/// <reference path="half_edge.ts" />
+import {Mesh} from 'three';
 
-module BP3D.Model {
+namespace BP3D.Model {
   /** */
   const defaultFloorPlanTolerance = 10.0;
 
-  /** 
+  /**
    * A Floorplan represents a number of Walls, Corners and Rooms.
    */
   export class Floorplan {
@@ -39,12 +33,12 @@ module BP3D.Model {
     /** */
     public roomLoadedCallbacks = $.Callbacks();
 
-    /** 
-    * Floor textures are owned by the floorplan, because room objects are 
-    * destroyed and created each time we change the floorplan.
-    * floorTextures is a map of room UUIDs (string) to a object with
-    * url and scale attributes.
-    */
+    /**
+     * Floor textures are owned by the floorplan, because room objects are
+     * destroyed and created each time we change the floorplan.
+     * floorTextures is a map of room UUIDs (string) to a object with
+     * url and scale attributes.
+     */
     private floorTextures = {};
 
     /** Constructs a floorplan. */
@@ -53,7 +47,7 @@ module BP3D.Model {
 
     // hack
     public wallEdges(): HalfEdge[] {
-      var edges = []
+      let edges = []
 
       this.walls.forEach((wall) => {
         if (wall.frontEdge) {
@@ -67,8 +61,8 @@ module BP3D.Model {
     }
 
     // hack
-    public wallEdgePlanes(): THREE.Mesh[] {
-      var planes = []
+    public wallEdgePlanes(): Mesh[] {
+      let planes = []
       this.walls.forEach((wall) => {
         if (wall.frontEdge) {
           planes.push(wall.frontEdge.plane);
@@ -80,7 +74,7 @@ module BP3D.Model {
       return planes;
     }
 
-    private floorPlanes(): THREE.Mesh[] {
+    private floorPlanes(): Mesh[] {
       return Core.Utils.map(this.rooms, (room: Room) => {
         return room.floorPlane;
       });
@@ -109,9 +103,9 @@ module BP3D.Model {
      * @returns The new wall.
      */
     public newWall(start: Corner, end: Corner): Wall {
-      var wall = new Wall(start, end);
+      let wall = new Wall(start, end);
       this.walls.push(wall)
-      var scope = this;
+      let scope = this;
       wall.fireOnDelete(() => {
         scope.removeWall(wall);
       });
@@ -136,7 +130,7 @@ module BP3D.Model {
      * @returns The new corner.
      */
     public newCorner(x: number, y: number, id?: string): Corner {
-      var corner = new Corner(this, x, y, id);
+      let corner = new Corner(this, x, y, id);
       this.corners.push(corner);
       corner.fireOnDelete(() => {
         this.removeCorner;
@@ -169,7 +163,7 @@ module BP3D.Model {
 
     public overlappedCorner(x: number, y: number, tolerance?: number): Corner {
       tolerance = tolerance || defaultFloorPlanTolerance;
-      for (var i = 0; i < this.corners.length; i++) {
+      for (let i = 0; i < this.corners.length; i++) {
         if (this.corners[i].distanceFrom(x, y) < tolerance) {
           return this.corners[i];
         }
@@ -179,7 +173,7 @@ module BP3D.Model {
 
     public overlappedWall(x: number, y: number, tolerance?: number): Wall {
       tolerance = tolerance || defaultFloorPlanTolerance;
-      for (var i = 0; i < this.walls.length; i++) {
+      for (let i = 0; i < this.walls.length; i++) {
         if (this.walls[i].distanceFrom(x, y) < tolerance) {
           return this.walls[i];
         }
@@ -190,7 +184,7 @@ module BP3D.Model {
     // import and export -- cleanup
 
     public saveFloorplan() {
-      var floorplan = {
+      let floorplan = {
         corners: {},
         walls: [],
         wallTextures: [],
@@ -220,17 +214,17 @@ module BP3D.Model {
     public loadFloorplan(floorplan) {
       this.reset();
 
-      var corners = {};
+      let corners = {};
       if (floorplan == null || !('corners' in floorplan) || !('walls' in floorplan)) {
         return
       }
-      for (var id in floorplan.corners) {
-        var corner = floorplan.corners[id];
+      for (let id in floorplan.corners) {
+        let corner = floorplan.corners[id];
         corners[id] = this.newCorner(corner.x, corner.y, id);
       }
-      var scope = this;
+      let scope = this;
       floorplan.walls.forEach((wall) => {
-        var newWall = scope.newWall(
+        let newWall = scope.newWall(
           corners[wall.corner1], corners[wall.corner2]);
         if (wall.frontTexture) {
           newWall.frontTexture = wall.frontTexture;
@@ -265,10 +259,10 @@ module BP3D.Model {
 
     /** clear out obsolete floor textures */
     private updateFloorTextures() {
-      var uuids = Core.Utils.map(this.rooms, function (room) {
+      let uuids = Core.Utils.map(this.rooms, function (room) {
         return room.getUuid();
       });
-      for (var uuid in this.floorTextures) {
+      for (let uuid in this.floorTextures) {
         if (!Core.Utils.hasValue(uuids, uuid)) {
           delete this.floorTextures[uuid]
         }
@@ -277,8 +271,8 @@ module BP3D.Model {
 
     /** */
     private reset() {
-      var tmpCorners = this.corners.slice(0);
-      var tmpWalls = this.walls.slice(0);
+      let tmpCorners = this.corners.slice(0);
+      let tmpWalls = this.walls.slice(0);
       tmpCorners.forEach((corner) => {
         corner.remove();
       })
@@ -289,7 +283,7 @@ module BP3D.Model {
       this.walls = [];
     }
 
-    /** 
+    /**
      * Update rooms
      */
     public update() {
@@ -297,9 +291,9 @@ module BP3D.Model {
         wall.resetFrontBack();
       });
 
-      var roomCorners = this.findRooms(this.corners);
+      let roomCorners = this.findRooms(this.corners);
       this.rooms = [];
-      var scope = this;
+      let scope = this;
       roomCorners.forEach((corners) => {
         scope.rooms.push(new Room(scope, corners));
       });
@@ -309,7 +303,7 @@ module BP3D.Model {
       this.updated_rooms.fire();
     }
 
-    /** 
+    /**
      * Returns the center of the floorplan in the y plane
      */
     public getCenter() {
@@ -323,17 +317,17 @@ module BP3D.Model {
     public getDimensions(center) {
       center = center || false; // otherwise, get size
 
-      var xMin = Infinity;
-      var xMax = -Infinity;
-      var zMin = Infinity;
-      var zMax = -Infinity;
+      let xMin = Infinity;
+      let xMax = -Infinity;
+      let zMin = Infinity;
+      let zMax = -Infinity;
       this.corners.forEach((corner) => {
         if (corner.x < xMin) xMin = corner.x;
         if (corner.x > xMax) xMax = corner.x;
         if (corner.y < zMin) zMin = corner.y;
         if (corner.y > zMax) zMax = corner.y;
       });
-      var ret;
+      let ret;
       if (xMin == Infinity || xMax == -Infinity || zMin == Infinity || zMax == -Infinity) {
         ret = new THREE.Vector3();
       } else {
@@ -352,13 +346,13 @@ module BP3D.Model {
       // kinda hacky
       // find orphaned wall segments (i.e. not part of rooms) and
       // give them edges
-      var orphanWalls = []
+      let orphanWalls = []
       this.walls.forEach((wall) => {
         if (!wall.backEdge && !wall.frontEdge) {
           wall.orphan = true;
-          var back = new HalfEdge(null, wall, false);
+          let back = new HalfEdge(null, wall, false);
           back.generatePlane();
-          var front = new HalfEdge(null, wall, true);
+          let front = new HalfEdge(null, wall, true);
           front.generatePlane();
           orphanWalls.push(wall);
         }
@@ -375,7 +369,7 @@ module BP3D.Model {
     public findRooms(corners: Corner[]): Corner[][] {
 
       function _calculateTheta(previousCorner: Corner, currentCorner: Corner, nextCorner: Corner) {
-        var theta = Core.Utils.angle2pi(
+        let theta = Core.Utils.angle2pi(
           previousCorner.x - currentCorner.x,
           previousCorner.y - currentCorner.y,
           nextCorner.x - currentCorner.x,
@@ -384,19 +378,19 @@ module BP3D.Model {
       }
 
       function _removeDuplicateRooms(roomArray: Corner[][]): Corner[][] {
-        var results: Corner[][] = [];
-        var lookup = {};
-        var hashFunc = function (corner) {
+        let results: Corner[][] = [];
+        let lookup = {};
+        let hashFunc = function (corner) {
           return corner.id
         };
-        var sep = '-';
-        for (var i = 0; i < roomArray.length; i++) {
+        let sep = '-';
+        for (let i = 0; i < roomArray.length; i++) {
           // rooms are cycles, shift it around to check uniqueness
-          var add = true;
-          var room = roomArray[i];
-          for (var j = 0; j < room.length; j++) {
-            var roomShift = Core.Utils.cycle(room, j);
-            var str = Core.Utils.map(roomShift, hashFunc).join(sep);
+          let add = true;
+          let room = roomArray[i];
+          for (let j = 0; j < room.length; j++) {
+            let roomShift = Core.Utils.cycle(room, j);
+            let str = Core.Utils.map(roomShift, hashFunc).join(sep);
             if (lookup.hasOwnProperty(str)) {
               add = false;
             }
@@ -410,21 +404,21 @@ module BP3D.Model {
       }
 
       function _findTightestCycle(firstCorner: Corner, secondCorner: Corner): Corner[] {
-        var stack: {
+        let stack: {
           corner: Corner,
           previousCorners: Corner[]
         }[] = [];
 
-        var next = {
+        let next = {
           corner: secondCorner,
           previousCorners: [firstCorner]
         };
-        var visited = {};
+        let visited = {};
         visited[firstCorner.id] = true;
 
         while (next) {
           // update previous corners, current corner, and visited corners
-          var currentCorner = next.corner;
+          let currentCorner = next.corner;
           visited[currentCorner.id] = true;
 
           // did we make it back to the startCorner?
@@ -432,10 +426,10 @@ module BP3D.Model {
             return next.previousCorners;
           }
 
-          var addToStack: Corner[] = [];
-          var adjacentCorners = next.corner.adjacentCorners();
-          for (var i = 0; i < adjacentCorners.length; i++) {
-            var nextCorner = adjacentCorners[i];
+          let addToStack: Corner[] = [];
+          let adjacentCorners = next.corner.adjacentCorners();
+          for (let i = 0; i < adjacentCorners.length; i++) {
+            let nextCorner = adjacentCorners[i];
 
             // is this where we came from?
             // give an exception if its the first corner and we aren't at the second corner
@@ -444,15 +438,15 @@ module BP3D.Model {
               continue;
             }
 
-            // nope, throw it on the queue  
+            // nope, throw it on the queue
             addToStack.push(nextCorner);
           }
 
-          var previousCorners = next.previousCorners.slice(0);
+          let previousCorners = next.previousCorners.slice(0);
           previousCorners.push(currentCorner);
           if (addToStack.length > 1) {
             // visit the ones with smallest theta first
-            var previousCorner = next.previousCorners[next.previousCorners.length - 1];
+            let previousCorner = next.previousCorners[next.previousCorners.length - 1];
             addToStack.sort(function (a, b) {
               return (_calculateTheta(previousCorner, currentCorner, b) -
                 _calculateTheta(previousCorner, currentCorner, a));
@@ -477,7 +471,7 @@ module BP3D.Model {
 
       // find tightest loops, for each corner, for each adjacent
       // TODO: optimize this, only check corners with > 2 adjacents, or isolated cycles
-      var loops: Corner[][] = [];
+      let loops: Corner[][] = [];
 
       corners.forEach((firstCorner) => {
         firstCorner.adjacentCorners().forEach((secondCorner) => {
@@ -486,9 +480,9 @@ module BP3D.Model {
       });
 
       // remove duplicates
-      var uniqueLoops = _removeDuplicateRooms(loops);
+      let uniqueLoops = _removeDuplicateRooms(loops);
       //remove CW loops
-      var uniqueCCWLoops = Core.Utils.removeIf(uniqueLoops, Core.Utils.isClockwise);
+      let uniqueCCWLoops = Core.Utils.removeIf(uniqueLoops, Core.Utils.isClockwise);
 
       return uniqueCCWLoops;
     }
