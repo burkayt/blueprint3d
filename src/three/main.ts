@@ -108,7 +108,7 @@ function Main(model, element, canvasElement, opts) {
       hasClicked = true;
     });
 
-    //canvas = new this.ThreeCanvas(canvasElement, scope);
+    // canvas = new this.ThreeCanvas(canvasElement, scope);
   }
 
   function spin() {
