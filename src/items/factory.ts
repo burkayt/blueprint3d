@@ -1,20 +1,17 @@
+/** Enumeration of item types. */
+const item_types = {
+  1: Items.FloorItem,
+  2: Items.WallItem,
+  3: Items.InWallItem,
+  7: Items.InWallFloorItem,
+  8: Items.OnFloorItem,
+  9: Items.WallFloorItem
+};
 
-namespace BP3D.Items {
-  /** Enumeration of item types. */
-  const item_types = {
-    1: Items.FloorItem,
-    2: Items.WallItem,
-    3: Items.InWallItem,
-    7: Items.InWallFloorItem,
-    8: Items.OnFloorItem,
-    9: Items.WallFloorItem
-  };
-
-  /** Factory class to create items. */
-  export class Factory {
-    /** Gets the class for the specified item. */
-    public static getClass(itemType) {
-      return item_types[itemType]
-    }
+/** Factory class to create items. */
+export class Factory {
+  /** Gets the class for the specified item. */
+  public static getClass(itemType) {
+    return item_types[itemType]
   }
 }

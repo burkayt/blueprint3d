@@ -1,106 +1,113 @@
-
 import {
-  DoubleSide, FrontSide, ImageUtils, Mesh, MeshBasicMaterial, MeshPhongMaterial, RepeatWrapping, Shape, ShapeGeometry,
+  DoubleSide,
+  FrontSide,
+  ImageUtils,
+  Mesh,
+  MeshBasicMaterial,
+  MeshPhongMaterial,
+  RepeatWrapping,
+  Shape,
+  ShapeGeometry,
   Vector2
 } from 'three';
 
-namespace BP3D.Three {
-  export var Floor = function (scene, room) {
+function Floor(scene, room) {
 
-    var scope = this;
+  let scope = this;
 
-    this.room = room;
-    var scene = scene;
+  this.room = room;
+  let scene = scene;
 
-    var floorPlane = null;
-    var roofPlane = null;
+  let floorPlane = null;
+  let roofPlane = null;
 
-    init();
+  init();
 
-    function init() {
-      scope.room.fireOnFloorChange(redraw);
-      floorPlane = buildFloor();
-      // roofs look weird, so commented out
-      //roofPlane = buildRoof();
-    }
+  function init() {
+    scope.room.fireOnFloorChange(redraw);
+    floorPlane = buildFloor();
+    // roofs look weird, so commented out
+    //roofPlane = buildRoof();
+  }
 
-    function redraw() {
-      scope.removeFromScene();
-      floorPlane = buildFloor();
-      scope.addToScene();
-    }
+  function redraw() {
+    scope.removeFromScene();
+    floorPlane = buildFloor();
+    scope.addToScene();
+  }
 
-    function buildFloor() {
-      var textureSettings = scope.room.getTexture();
-      // setup texture
-      var floorTexture = ImageUtils.loadTexture(textureSettings.url);
-      floorTexture.wrapS = RepeatWrapping;
-      floorTexture.wrapT = RepeatWrapping;
-      floorTexture.repeat.set(1, 1);
-      var floorMaterialTop = new MeshPhongMaterial({
-        map: floorTexture,
-        side: DoubleSide,
-        // ambient: 0xffffff, TODO_Ekki
-        color: 0xcccccc,
-        specular: 0x0a0a0a
-      });
+  function buildFloor() {
+    let textureSettings = scope.room.getTexture();
+    // setup texture
+    let floorTexture = ImageUtils.loadTexture(textureSettings.url);
+    floorTexture.wrapS = RepeatWrapping;
+    floorTexture.wrapT = RepeatWrapping;
+    floorTexture.repeat.set(1, 1);
+    let floorMaterialTop = new MeshPhongMaterial({
+      map: floorTexture,
+      side: DoubleSide,
+      // ambient: 0xffffff, TODO_Ekki
+      color: 0xcccccc,
+      specular: 0x0a0a0a
+    });
 
-      var textureScale = textureSettings.scale;
-      // http://stackoverflow.com/questions/19182298/how-to-texture-a-three-js-mesh-created-with-shapegeometry
-      // scale down coords to fit 0 -> 1, then rescale
+    let textureScale = textureSettings.scale;
+    // http://stackoverflow.com/questions/19182298/how-to-texture-a-three-js-mesh-created-with-shapegeometry
+    // scale down coords to fit 0 -> 1, then rescale
 
-      var points = [];
-      scope.room.interiorCorners.forEach((corner) => {
-        points.push(new Vector2(
-          corner.x / textureScale,
-          corner.y / textureScale));
-      });
-      var shape = new Shape(points);
+    let points = [];
+    scope.room.interiorCorners.forEach((corner) => {
+      points.push(new Vector2(
+        corner.x / textureScale,
+        corner.y / textureScale));
+    });
+    let shape = new Shape(points);
 
-      var geometry = new ShapeGeometry(shape);
+    let geometry = new ShapeGeometry(shape);
 
-      var floor = new Mesh(geometry, floorMaterialTop);
+    let floor = new Mesh(geometry, floorMaterialTop);
 
-      floor.rotation.set(Math.PI / 2, 0, 0);
-      floor.scale.set(textureScale, textureScale, textureScale);
-      floor.receiveShadow = true;
-      floor.castShadow = false;
-      return floor;
-    }
+    floor.rotation.set(Math.PI / 2, 0, 0);
+    floor.scale.set(textureScale, textureScale, textureScale);
+    floor.receiveShadow = true;
+    floor.castShadow = false;
+    return floor;
+  }
 
-    function buildRoof() {
-      // setup texture
-      var roofMaterial = new MeshBasicMaterial({
-        side: FrontSide,
-        color: 0xe5e5e5
-      });
+  function buildRoof() {
+    // setup texture
+    let roofMaterial = new MeshBasicMaterial({
+      side: FrontSide,
+      color: 0xe5e5e5
+    });
 
-      var points = [];
-      scope.room.interiorCorners.forEach((corner) => {
-        points.push(new Vector2(
-          corner.x,
-          corner.y));
-      });
-      var shape = new Shape(points);
-      var geometry = new ShapeGeometry(shape);
-      var roof = new Mesh(geometry, roofMaterial);
+    let points = [];
+    scope.room.interiorCorners.forEach((corner) => {
+      points.push(new Vector2(
+        corner.x,
+        corner.y));
+    });
+    let shape = new Shape(points);
+    let geometry = new ShapeGeometry(shape);
+    let roof = new Mesh(geometry, roofMaterial);
 
-      roof.rotation.set(Math.PI / 2, 0, 0);
-      roof.position.y = 250;
-      return roof;
-    }
+    roof.rotation.set(Math.PI / 2, 0, 0);
+    roof.position.y = 250;
+    return roof;
+  }
 
-    this.addToScene = function () {
-      scene.add(floorPlane);
-      //scene.add(roofPlane);
-      // hack so we can do intersect testing
-      scene.add(room.floorPlane);
-    }
+  this.addToScene = function () {
+    scene.add(floorPlane);
+    //scene.add(roofPlane);
+    // hack so we can do intersect testing
+    scene.add(room.floorPlane);
+  }
 
-    this.removeFromScene = function () {
-      scene.remove(floorPlane);
-      //scene.remove(roofPlane);
-      scene.remove(room.floorPlane);
-    }
+  this.removeFromScene = function () {
+    scene.remove(floorPlane);
+    //scene.remove(roofPlane);
+    scene.remove(room.floorPlane);
   }
 }
+
+export default Floor;
