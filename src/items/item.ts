@@ -1,16 +1,46 @@
+import {
+  AdditiveBlending,
+  Box3,
+  Color,
+  Geometry,
+  Intersection,
+  Matrix4,
+  Mesh,
+  MeshBasicMaterial,
+  MultiMaterial,
+  Vector3
+} from 'three';
+import Scene from '../model/scene';
+import Metadata from './metadata';
+import Model from '../model/model';
+import Utils from '../core/utils';
+
 /**
  * An Item is an abstract entity for all things placed in the scene,
  * e.g. at walls or on the floor.
  */
-import {Mesh} from 'three';
-
 abstract class Item extends Mesh {
 
   /** */
-  private scene: Model.Scene;
+  public fixed = false;
+
+  /** Does this object affect other floor items */
+  protected obstructFloorMoves = true;
 
   /** */
-  private errorGlow = new THREE.Mesh();
+  protected positionSet: boolean;
+
+  /** Show rotate option in context menu */
+  protected allowRotate = true;
+
+  /** */
+  protected halfSize: Vector3;
+
+  /** */
+  private scene: Scene;
+
+  /** */
+  private errorGlow = new Mesh();
 
   /** */
   private hover = false;
@@ -33,23 +63,9 @@ abstract class Item extends Mesh {
   /** */
   private resizable: boolean;
 
-  /** Does this object affect other floor items */
-  protected obstructFloorMoves = true;
-
-  /** */
-  protected position_set: boolean;
-
-  /** Show rotate option in context menu */
-  protected allowRotate = true;
-
-  /** */
-  public fixed = false;
-
   /** dragging */
-  private dragOffset = new THREE.Vector3();
+  private dragOffset = new Vector3();
 
-  /** */
-  protected halfSize: THREE.Vector3;
 
   /** Constructs an item.
    * @param model TODO
@@ -60,7 +76,7 @@ abstract class Item extends Mesh {
    * @param rotation TODO
    * @param scale TODO
    */
-  constructor(protected model: Model.Model, public metadata: Metadata, geometry: THREE.Geometry, material: THREE.MeshFaceMaterial, position: THREE.Vector3, rotation: number, scale: THREE.Vector3) {
+  constructor(protected model: Model, public metadata: Metadata, geometry: Geometry, material: MultiMaterial, position: Vector3, rotation: number, scale: Vector3) {
     super();
 
     this.scene = this.model.scene;
@@ -69,7 +85,9 @@ abstract class Item extends Mesh {
 
     this.errorColor = 0xff0000;
 
-    this.resizable = metadata.resizable;
+    if (metadata.resizable) {
+      this.resizable = metadata.resizable;
+    }
 
     this.castShadow = true;
     this.receiveShadow = false;
@@ -79,14 +97,14 @@ abstract class Item extends Mesh {
 
     if (position) {
       this.position.copy(position);
-      this.position_set = true;
+      this.positionSet = true;
     } else {
-      this.position_set = false;
+      this.positionSet = false;
     }
 
     // center in its boundingbox
     this.geometry.computeBoundingBox();
-    this.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(
+    this.geometry.applyMatrix(new Matrix4().makeTranslation(
       -0.5 * (this.geometry.boundingBox.max.x + this.geometry.boundingBox.min.x),
       -0.5 * (this.geometry.boundingBox.max.y + this.geometry.boundingBox.min.y),
       -0.5 * (this.geometry.boundingBox.max.z + this.geometry.boundingBox.min.z)
@@ -110,17 +128,17 @@ abstract class Item extends Mesh {
 
   /** */
   public resize(height: number, width: number, depth: number) {
-    var x = width / this.getWidth();
-    var y = height / this.getHeight();
-    var z = depth / this.getDepth();
+    let x = width / this.getWidth();
+    let y = height / this.getHeight();
+    let z = depth / this.getDepth();
     this.setScale(x, y, z);
   }
 
   /** */
   public setScale(x: number, y: number, z: number) {
-    var scaleVec = new THREE.Vector3(x, y, z);
+    let scaleVec = new Vector3(x, y, z);
     this.halfSize.multiply(scaleVec);
-    scaleVec.multiply(this.scale)
+    scaleVec.multiply(this.scale);
     this.scale.set(scaleVec.x, scaleVec.y, scaleVec.z);
     this.resized();
     this.scene.needsUpdate = true;
@@ -131,46 +149,42 @@ abstract class Item extends Mesh {
     this.fixed = fixed;
   }
 
-  /** Subclass can define to take action after a resize. */
-  protected abstract resized();
-
   /** */
-  public getHeight = function () {
+  public getHeight() {
     return this.halfSize.y * 2.0;
-  }
+  };
 
   /** */
-  public getWidth = function () {
+  public getWidth() {
     return this.halfSize.x * 2.0;
   }
 
   /** */
-  public getDepth = function () {
+  public getDepth() {
     return this.halfSize.z * 2.0;
   }
 
   /** */
-  public abstract placeInRoom();
+  public abstract placeInRoom(): void;
 
   /** */
-  public initObject = function () {
+  public initObject() {
     this.placeInRoom();
     // select and stuff
     this.scene.needsUpdate = true;
   };
 
   /** */
-  public removed() {
-  }
+  public abstract removed(): void;
 
   /** on is a bool */
   public updateHighlight() {
-    var on = this.hover || this.selected;
+    let on = this.hover || this.selected;
     this.highlighted = on;
-    var hex = on ? this.emissiveColor : 0x000000;
-    (<THREE.MeshFaceMaterial>this.material).materials.forEach((material) => {
+    let hex = on ? this.emissiveColor : 0x000000;
+    (this.material as MultiMaterial).materials.forEach((material) => {
       // TODO_Ekki emissive doesn't exist anymore?
-      (<any>material).emissive.setHex(hex);
+      (material as any).emissive.setHex(hex);
     });
   }
 
@@ -199,32 +213,30 @@ abstract class Item extends Mesh {
   };
 
   /** intersection has attributes point (vec3) and object (THREE.Mesh) */
-  public clickPressed(intersection) {
+  public clickPressed(intersection: Intersection) {
     this.dragOffset.copy(intersection.point).sub(this.position);
   };
 
   /** */
-  public clickDragged(intersection) {
+  public clickDragged(intersection: any) {
     if (intersection) {
-      this.moveToPosition(
-        intersection.point.sub(this.dragOffset),
-        intersection);
+      this.moveToPosition(intersection.point.sub(this.dragOffset), intersection);
     }
   };
 
   /** */
-  public rotate(intersection) {
+  public rotate(intersection: Intersection) {
     if (intersection) {
-      var angle = Core.Utils.angle(
+      let angle = Utils.angle(
         0,
         1,
         intersection.point.x - this.position.x,
         intersection.point.z - this.position.z);
 
-      var snapTolerance = Math.PI / 16.0;
+      let snapTolerance = Math.PI / 16.0;
 
       // snap to intervals near Math.PI/2
-      for (var i = -4; i <= 4; i++) {
+      for (let i = -4; i <= 4; i++) {
         if (Math.abs(angle - (i * (Math.PI / 2))) < snapTolerance) {
           angle = i * (Math.PI / 2);
           break;
@@ -236,7 +248,7 @@ abstract class Item extends Mesh {
   }
 
   /** */
-  public moveToPosition(vec3, intersection) {
+  public moveToPosition(vec3: Vector3, intersection: Intersection) {
     this.position.copy(vec3);
   }
 
@@ -251,7 +263,7 @@ abstract class Item extends Mesh {
    * Returns an array of planes to use other than the ground plane
    * for passing intersection to clickPressed and clickDragged
    */
-  public customIntersectionPlanes() {
+  public customIntersectionPlanes(): Mesh[] {
     return [];
   }
 
@@ -262,19 +274,19 @@ abstract class Item extends Mesh {
    *
    * TODO: handle rotated objects better!
    */
-  public getCorners(xDim, yDim, position) {
+  public getCorners(xDim: number, yDim: number, position: Vector3) {
 
     position = position || this.position;
 
-    var halfSize = this.halfSize.clone();
+    let halfSize = this.halfSize.clone();
 
-    var c1 = new THREE.Vector3(-halfSize.x, 0, -halfSize.z);
-    var c2 = new THREE.Vector3(halfSize.x, 0, -halfSize.z);
-    var c3 = new THREE.Vector3(halfSize.x, 0, halfSize.z);
-    var c4 = new THREE.Vector3(-halfSize.x, 0, halfSize.z);
+    let c1 = new Vector3(-halfSize.x, 0, -halfSize.z);
+    let c2 = new Vector3(halfSize.x, 0, -halfSize.z);
+    let c3 = new Vector3(halfSize.x, 0, halfSize.z);
+    let c4 = new Vector3(-halfSize.x, 0, halfSize.z);
 
-    var transform = new THREE.Matrix4();
-    //console.log(this.rotation.y);
+    let transform = new Matrix4();
+    // console.log(this.rotation.y);
     transform.makeRotationY(this.rotation.y); //  + Math.PI/2)
 
     c1.applyMatrix4(transform);
@@ -287,12 +299,12 @@ abstract class Item extends Mesh {
     c3.add(position);
     c4.add(position);
 
-    //halfSize.applyMatrix4(transform);
+    // halfSize.applyMatrix4(transform);
 
-    //var min = position.clone().sub(halfSize);
-    //var max = position.clone().add(halfSize);
+    // var min = position.clone().sub(halfSize);
+    // var max = position.clone().add(halfSize);
 
-    var corners = [
+    let corners = [
       {x: c1.x, y: c1.z},
       {x: c2.x, y: c2.z},
       {x: c3.x, y: c3.z},
@@ -302,11 +314,12 @@ abstract class Item extends Mesh {
     return corners;
   }
 
-  /** */
-  public abstract isValidPosition(vec3): boolean;
 
   /** */
-  public showError(vec3) {
+  public abstract isValidPosition(vec3: Vector3): boolean;
+
+  /** */
+  public showError(vec3: Vector3) {
     vec3 = vec3 || this.position;
     if (!this.error) {
       this.error = true;
@@ -324,31 +337,35 @@ abstract class Item extends Mesh {
     }
   }
 
-  /** */
-  private objectHalfSize(): THREE.Vector3 {
-    var objectBox = new THREE.Box3();
-    objectBox.setFromObject(this);
-    return objectBox.max.clone().sub(objectBox.min).divideScalar(2);
-  }
 
   /** */
-  public createGlow(color, opacity, ignoreDepth): THREE.Mesh {
-    ignoreDepth = ignoreDepth || false
+  public createGlow(color: number | string | Color, opacity: number, ignoreDepth: boolean): Mesh {
+    ignoreDepth = ignoreDepth || false;
     opacity = opacity || 0.2;
-    var glowMaterial = new THREE.MeshBasicMaterial({
+    let glowMaterial = new MeshBasicMaterial({
       color: color,
-      blending: THREE.AdditiveBlending,
+      blending: AdditiveBlending,
       opacity: 0.2,
       transparent: true,
       depthTest: !ignoreDepth
     });
 
-    var glow = new THREE.Mesh(<THREE.Geometry>this.geometry.clone(), glowMaterial);
+    let glow = new Mesh(this.geometry.clone() as Geometry, glowMaterial);
     glow.position.copy(this.position);
     glow.rotation.copy(this.rotation);
     glow.scale.copy(this.scale);
     return glow;
   };
+
+  /** Subclass can define to take action after a resize. */
+  protected abstract resized(): void;
+
+  /** */
+  private objectHalfSize(): Vector3 {
+    let objectBox = new Box3();
+    objectBox.setFromObject(this);
+    return objectBox.max.clone().sub(objectBox.min).divideScalar(2);
+  }
 }
 
 export default Item;

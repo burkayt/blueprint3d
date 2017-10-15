@@ -1,25 +1,27 @@
-import {Mesh, MeshBasicMaterial, PlaneGeometry, Raycaster, Vector2, Vector3} from 'three';
+import {
+  Camera, Intersection, Mesh, MeshBasicMaterial, Object3D, PlaneGeometry, Raycaster, Vector2,
+  Vector3
+} from 'three';
+import Scene from '../model/scene';
+import Model from '../model/model';
+import Item from '../items/item';
+import Utils from '../core/utils';
 
-function Controller(three, model, camera, element, controls, hud) {
 
-  let scope = this;
+let Controller: any = function (three:any, model: Model, camera: Camera, element: any, controls: any, hud: any) {
 
-  this.enabled = true;
+  let scope = Controller;
 
-  let three = three;
-  let model = model;
-  let scene = model.scene;
-  let element = element;
-  let camera = camera;
-  let controls = controls;
-  let hud = hud;
+  scope.enabled = true;
 
-  let plane; // ground plane used for intersection testing
+  let scene: Scene = model.scene;
 
-  let mouse;
-  let intersectedObject;
-  let mouseoverObject;
-  let selectedObject;
+  let plane: Mesh; // ground plane used for intersection testing
+
+  let mouse: Vector2;
+  let intersectedObject: Item | null;
+  let mouseoverObject: Item | null;
+  let selectedObject: Item | null;
 
   let mouseDown = false;
   let mouseMoved = false; // has mouse moved since down click
@@ -36,7 +38,7 @@ function Controller(three, model, camera, element, controls, hud) {
   };
   let state = states.UNSELECTED;
 
-  this.needsUpdate = true;
+  scope.needsUpdate = true;
 
   function init() {
     element.mousedown(mouseDownEvent);
@@ -51,8 +53,8 @@ function Controller(three, model, camera, element, controls, hud) {
   }
 
   // invoked via callback when item is loaded
-  function itemLoaded(item) {
-    if (!item.position_set) {
+  function itemLoaded(item: any) {
+    if (!item.positionSet) {
       scope.setSelectedObject(item);
       switchState(states.DRAGGING);
       let pos = item.position.clone();
@@ -60,21 +62,21 @@ function Controller(three, model, camera, element, controls, hud) {
       let vec = three.projectVector(pos);
       clickPressed(vec);
     }
-    item.position_set = true;
+    item.positionSet = true;
   }
 
-  function clickPressed(vec2?) {
+  function clickPressed(vec2?: Vector2) {
     vec2 = vec2 || mouse;
     let intersection = scope.itemIntersection(mouse, selectedObject);
-    if (intersection) {
+    if (intersection && selectedObject) {
       selectedObject.clickPressed(intersection);
     }
   }
 
-  function clickDragged(vec2?) {
+  function clickDragged(vec2?: Vector2) {
     vec2 = vec2 || mouse;
     let intersection = scope.itemIntersection(mouse, selectedObject);
-    if (intersection) {
+    if (intersection && selectedObject) {
       if (scope.isRotating()) {
         selectedObject.rotate(intersection);
       } else {
@@ -83,7 +85,7 @@ function Controller(three, model, camera, element, controls, hud) {
     }
   }
 
-  function itemRemoved(item) {
+  function itemRemoved(item: Item) {
     // invoked as a callback to event in Scene
     if (item === selectedObject) {
       selectedObject.setUnselected();
@@ -103,10 +105,10 @@ function Controller(three, model, camera, element, controls, hud) {
     scene.add(plane);
   }
 
-  function checkWallsAndFloors(event?) {
+  function checkWallsAndFloors(event?: any) {
 
     // double click on a wall or floor brings up texture change modal
-    if (state == states.UNSELECTED && mouseoverObject == null) {
+    if (state ===  states.UNSELECTED && mouseoverObject == null) {
       // check walls
       let wallEdgePlanes = model.floorplan.wallEdgePlanes();
       let wallIntersects = scope.getIntersections(
@@ -132,7 +134,7 @@ function Controller(three, model, camera, element, controls, hud) {
 
   }
 
-  function mouseMoveEvent(event) {
+  function mouseMoveEvent(event: any) {
     if (scope.enabled) {
       event.preventDefault();
 
@@ -163,11 +165,11 @@ function Controller(three, model, camera, element, controls, hud) {
     }
   }
 
-  this.isRotating = function () {
-    return (state == states.ROTATING || state == states.ROTATING_FREE);
-  }
+  scope.isRotating = function () {
+    return (state === states.ROTATING || state === states.ROTATING_FREE);
+  };
 
-  function mouseDownEvent(event) {
+  function mouseDownEvent(event: Event) {
     if (scope.enabled) {
       event.preventDefault();
 
@@ -203,8 +205,8 @@ function Controller(three, model, camera, element, controls, hud) {
     }
   }
 
-  function mouseUpEvent(event) {
-    if (scope.enabled) {
+  function mouseUpEvent(event: Event) {
+    if (scope.enabled && selectedObject) {
       mouseDown = false;
 
       switch (state) {
@@ -236,8 +238,8 @@ function Controller(three, model, camera, element, controls, hud) {
     }
   }
 
-  function switchState(newState) {
-    if (newState != state) {
+  function switchState(newState: any) {
+    if (newState !== state) {
       onExit(state);
       onEntry(newState);
     }
@@ -245,10 +247,11 @@ function Controller(three, model, camera, element, controls, hud) {
     hud.setRotating(scope.isRotating());
   }
 
-  function onEntry(state) {
+  function onEntry(state: any) {
     switch (state) {
       case states.UNSELECTED:
         scope.setSelectedObject(null);
+        break; // TODO Test ben ekledim.
       case states.SELECTED:
         controls.enabled = true;
         break;
@@ -264,7 +267,7 @@ function Controller(three, model, camera, element, controls, hud) {
     }
   }
 
-  function onExit(state) {
+  function onExit(state: any) {
     switch (state) {
       case states.UNSELECTED:
       case states.SELECTED:
@@ -282,9 +285,9 @@ function Controller(three, model, camera, element, controls, hud) {
     }
   }
 
-  this.selectedObject = function () {
+  scope.selectedObject = function () {
     return selectedObject;
-  }
+  };
 
   // updates the vector of the intersection with the plane of a given
   // mouse position, and the intersected object
@@ -323,7 +326,7 @@ function Controller(three, model, camera, element, controls, hud) {
   }
 
   // sets coords to -1 to 1
-  function normalizeVector2(vec2) {
+  function normalizeVector2(vec2: Vector2) {
     let retVec = new Vector2();
     retVec.x = ((vec2.x - three.widthMargin) / (window.innerWidth - three.widthMargin)) * 2 - 1;
     retVec.y = -((vec2.y - three.heightMargin) / (window.innerHeight - three.heightMargin)) * 2 + 1;
@@ -331,8 +334,8 @@ function Controller(three, model, camera, element, controls, hud) {
   }
 
   //
-  function mouseToVec3(vec2) {
-    let normVec2 = normalizeVector2(vec2)
+  function mouseToVec3(vec2: Vector2) {
+    let normVec2 = normalizeVector2(vec2);
     let vector = new Vector3(
       normVec2.x, normVec2.y, 0.5);
     vector.unproject(camera);
@@ -340,7 +343,7 @@ function Controller(three, model, camera, element, controls, hud) {
   }
 
   // returns the first intersection object
-  this.itemIntersection = function (vec2, item) {
+  scope.itemIntersection = function (vec2: Vector2, item: Item) {
     let customIntersections = item.customIntersectionPlanes();
     let intersections = null;
     if (customIntersections && customIntersections.length > 0) {
@@ -353,11 +356,11 @@ function Controller(three, model, camera, element, controls, hud) {
     } else {
       return null;
     }
-  }
+  };
 
   // filter by normals will only return objects facing the camera
   // objects can be an array of objects or a single object
-  this.getIntersections = function (vec2, objects, filterByNormals, onlyVisible, recursive, linePrecision) {
+  scope.getIntersections = function (vec2:Vector2, objects:Object3D, filterByNormals: boolean, onlyVisible: boolean, recursive: boolean, linePrecision: number) {
 
     let vector = mouseToVec3(vec2);
 
@@ -380,23 +383,23 @@ function Controller(three, model, camera, element, controls, hud) {
     }
     // filter by visible, if true
     if (onlyVisible) {
-      intersections = Utils.removeIf(intersections, function (intersection) {
+      intersections = Utils.removeIf(intersections, function (intersection: Intersection) {
         return !intersection.object.visible;
       });
     }
 
     // filter by normals, if true
     if (filterByNormals) {
-      intersections = Utils.removeIf(intersections, function (intersection) {
+      intersections = Utils.removeIf(intersections, function (intersection: Intersection) {
         let dot = intersection.face.normal.dot(direction);
         return (dot > 0)
       });
     }
     return intersections;
-  }
+  };
 
   // manage the selected object
-  this.setSelectedObject = function (object) {
+  scope.setSelectedObject = function (object: Item) {
     if (state === states.UNSELECTED) {
       switchState(states.SELECTED);
     }

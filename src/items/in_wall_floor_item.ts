@@ -1,6 +1,11 @@
 /** */
+import {InWallItem} from './in_wall_item';
+import {Model} from "../model/model";
+import Metadata from './metadata';
+import {Geometry, MultiMaterial, Vector3} from 'three';
+
 abstract class InWallFloorItem extends InWallItem {
-  constructor(model: Model.Model, metadata: Metadata, geometry: THREE.Geometry, material: THREE.MeshFaceMaterial, position: THREE.Vector3, rotation: number, scale: THREE.Vector3) {
+  constructor(model: Model, metadata: Metadata, geometry: Geometry, material: MultiMaterial, position: Vector3, rotation: number, scale: Vector3) {
     super(model, metadata, geometry, material, position, rotation, scale);
     this.boundToFloor = true;
   };

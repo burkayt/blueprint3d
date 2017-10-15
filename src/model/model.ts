@@ -2,6 +2,8 @@
  * A Model connects a Floorplan and a Scene.
  */
 import {Floorplan} from './floorplan';
+import Scene from './scene';
+import {Vector3} from 'three';
 
 export class Model {
 
@@ -36,7 +38,7 @@ export class Model {
     // TODO: a much better serialization format.
     this.roomLoadingCallbacks.fire();
 
-    var data = JSON.parse(json)
+    let data = JSON.parse(json)
     this.newRoom(
       data.floorplan,
       data.items
@@ -46,11 +48,11 @@ export class Model {
   }
 
   private exportSerialized(): string {
-    var items_arr = [];
-    var objects = this.scene.getItems();
-    for (var i = 0; i < objects.length; i++) {
-      var object = objects[i];
-      items_arr[i] = {
+    let itemsArr = [];
+    let objects = this.scene.getItems();
+    for (let i = 0; i < objects.length; i++) {
+      let object = objects[i];
+      itemsArr[i] = {
         item_name: object.metadata.itemName,
         item_type: object.metadata.itemType,
         model_url: object.metadata.modelUrl,
@@ -65,27 +67,27 @@ export class Model {
       };
     }
 
-    var room = {
+    let room = {
       floorplan: (this.floorplan.saveFloorplan()),
-      items: items_arr
+      items: itemsArr
     };
 
     return JSON.stringify(room);
   }
 
-  private newRoom(floorplan: string, items) {
+  private newRoom(floorplan: string, items: any) {
     this.scene.clearItems();
     this.floorplan.loadFloorplan(floorplan);
-    items.forEach((item) => {
-      var position = new THREE.Vector3(
+    items.forEach((item: any) => {
+      let position = new Vector3(
         item.xpos, item.ypos, item.zpos);
-      var metadata = {
+      let metadata = {
         itemName: item.item_name,
         resizable: item.resizable,
         itemType: item.item_type,
         modelUrl: item.model_url
       };
-      var scale = new THREE.Vector3(
+      let scale = new Vector3(
         item.scale_x,
         item.scale_y,
         item.scale_z

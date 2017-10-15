@@ -1,10 +1,16 @@
 /*
-TODO
-var Vec2 = require('vec2')
-var segseg = require('segseg')
-var Polygon = require('polygon')
-*/
+ TODO
+ var Vec2 = require('vec2')
+ var segseg = require('segseg')
+ var Polygon = require('polygon')
+ */
 
+
+import {Corner} from './corner';
+import {DoubleSide, Mesh, MeshBasicMaterial, Shape, ShapeGeometry, Vector2} from 'three';
+import {Floorplan} from './floorplan';
+import Utils from '../core/utils';
+import HalfEdge from './half_edge';
 
 /** Default texture to be used if nothing is provided. */
 const defaultRoomTexture = {
@@ -20,14 +26,14 @@ export class Room {
   /** */
   public interiorCorners: Corner[] = [];
 
-  /** */
-  private edgePointer = null;
-
   /** floor plane for intersection testing */
-  public floorPlane: THREE.Mesh = null;
+  public floorPlane: Mesh | null = null;
 
   /** */
   private customTexture = false;
+
+  /** */
+  private edgePointer: HalfEdge | null = null;
 
   /** */
   private floorChangeCallbacks = $.Callbacks();
@@ -41,52 +47,53 @@ export class Room {
     this.generatePlane();
   }
 
+  public fireOnFloorChange(callback: any) {
+    this.floorChangeCallbacks.add(callback);
+  }
+
   private getUuid(): string {
-    var cornerUuids = Core.Utils.map(this.corners, function (c) {
+    let cornerUuids = Utils.map(this.corners, function (c: any) {
       return c.id;
     });
     cornerUuids.sort();
     return cornerUuids.join();
   }
 
-  public fireOnFloorChange(callback) {
-    this.floorChangeCallbacks.add(callback);
-  }
 
   private getTexture() {
-    var uuid = this.getUuid();
-    var tex = this.floorplan.getFloorTexture(uuid);
+    let uuid = this.getUuid();
+    let tex = this.floorplan.getFloorTexture(uuid);
     return tex || defaultRoomTexture;
   }
 
   /**
    * textureStretch always true, just an argument for consistency with walls
    */
-  private setTexture(textureUrl: string, textureStretch, textureScale: number) {
-    var uuid = this.getUuid();
+  private setTexture(textureUrl: string, textureStretch: any, textureScale: number) {
+    let uuid = this.getUuid();
     this.floorplan.setFloorTexture(uuid, textureUrl, textureScale);
     this.floorChangeCallbacks.fire();
   }
 
   private generatePlane() {
-    var points = [];
+    let points: Vector2[] = [];
     this.interiorCorners.forEach((corner) => {
-      points.push(new THREE.Vector2(
+      points.push(new Vector2(
         corner.x,
         corner.y));
     });
-    var shape = new THREE.Shape(points);
-    var geometry = new THREE.ShapeGeometry(shape);
-    this.floorPlane = new THREE.Mesh(geometry,
-      new THREE.MeshBasicMaterial({
-        side: THREE.DoubleSide
+    let shape = new Shape(points);
+    let geometry = new ShapeGeometry(shape);
+    this.floorPlane = new Mesh(geometry,
+      new MeshBasicMaterial({
+        side: DoubleSide
       }));
     this.floorPlane.visible = false;
     this.floorPlane.rotation.set(Math.PI / 2, 0, 0);
-    (<any>this.floorPlane).room = this; // js monkey patch
+    (this.floorPlane as any).room = this; // js monkey patch
   }
 
-  private cycleIndex(index) {
+  private cycleIndex(index: number) {
     if (index < 0) {
       return index += this.corners.length;
     } else {
@@ -95,14 +102,19 @@ export class Room {
   }
 
   private updateInteriorCorners() {
-    var edge = this.edgePointer;
+    if (!this.edgePointer) {
+      return;
+    }
+    let edge: HalfEdge = this.edgePointer;
     while (true) {
-      this.interiorCorners.push(edge.interiorStart());
-      edge.generatePlane();
-      if (edge.next === this.edgePointer) {
-        break;
-      } else {
-        edge = edge.next;
+      if (edge) {
+        this.interiorCorners.push(edge.interiorStart() as Corner); // TODO patlama ihtimali çok yüksek
+        edge.generatePlane();
+        if (edge.next === this.edgePointer) {
+          break;
+        } else {
+          edge = edge.next;
+        }
       }
     }
   }
@@ -113,37 +125,45 @@ export class Room {
    */
   private updateWalls() {
 
-    var prevEdge = null;
-    var firstEdge = null;
+    let prevEdge: HalfEdge | null = null;
+    let firstEdge: HalfEdge | null = null;
 
-    for (var i = 0; i < this.corners.length; i++) {
+    for (let i = 0; i < this.corners.length; i++) {
 
-      var firstCorner = this.corners[i];
-      var secondCorner = this.corners[(i + 1) % this.corners.length];
+      let firstCorner = this.corners[i];
+      let secondCorner = this.corners[(i + 1) % this.corners.length];
 
       // find if wall is heading in that direction
-      var wallTo = firstCorner.wallTo(secondCorner);
-      var wallFrom = firstCorner.wallFrom(secondCorner);
+      let wallTo = firstCorner.wallTo(secondCorner);
+      let wallFrom = firstCorner.wallFrom(secondCorner);
+      let edge: HalfEdge | null = null;
 
       if (wallTo) {
-        var edge = new HalfEdge(this, wallTo, true);
+        edge = new HalfEdge(this, wallTo, true);
       } else if (wallFrom) {
-        var edge = new HalfEdge(this, wallFrom, false);
+        edge = new HalfEdge(this, wallFrom, false);
       } else {
         // something horrible has happened
         console.log("corners arent connected by a wall, uh oh");
       }
 
-      if (i == 0) {
-        firstEdge = edge;
-      } else {
-        edge.prev = prevEdge;
-        prevEdge.next = edge;
-        if (i + 1 == this.corners.length) {
-          firstEdge.prev = edge;
-          edge.next = firstEdge;
+      if (edge) {
+        if (i === 0) {
+          firstEdge = edge;
+        } else {
+          if (prevEdge) {
+            edge.prev = prevEdge;
+            prevEdge.next = edge;
+          }
+          if (i + 1 === this.corners.length) {
+            if (firstEdge) {
+              firstEdge.prev = edge;
+              edge.next = firstEdge;
+            }
+          }
         }
       }
+
       prevEdge = edge;
     }
 

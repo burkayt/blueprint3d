@@ -3,7 +3,6 @@ branches:
   only:
     - master
     - /^greenkeeper/.*$/
-    - new-structure
 cache:
   yarn: true
   directories:

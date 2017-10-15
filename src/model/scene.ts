@@ -1,11 +1,22 @@
 import * as THREE from 'three';
 import {Geometry, JSONLoader, Material, Mesh, MultiMaterial, Vector3} from 'three';
+import {Factory} from "../items/factory";
+import Item from '../items/item';
+import Model from './model';
+import Utils from '../core/utils';
+import Metadata from '../items/metadata';
 
 
 /**
  * The Scene is a manager of Items and also links to a ThreeJS scene.
  */
 class Scene {
+
+  /** Item */
+  public itemLoadedCallbacks = $.Callbacks();
+
+  /** Item */
+  public itemRemovedCallbacks = $.Callbacks();
 
   /** The associated ThreeJS scene. */
   private scene: THREE.Scene;
@@ -22,11 +33,7 @@ class Scene {
   /** */
   private itemLoadingCallbacks = $.Callbacks();
 
-  /** Item */
-  private itemLoadedCallbacks = $.Callbacks();
 
-  /** Item */
-  private itemRemovedCallbacks = $.Callbacks();
 
   /**
    * Constructs a scene.
@@ -53,7 +60,7 @@ class Scene {
    */
   public remove(mesh: Mesh) {
     this.scene.remove(mesh);
-    Core.Utils.removeValue(this.items, mesh);
+    Utils.removeValue(this.items, mesh);
   }
 
   /** Gets the scene.
@@ -66,7 +73,7 @@ class Scene {
   /** Gets the items.
    * @returns The items.
    */
-  public getItems(): Items.Item[] {
+  public getItems(): Item[] {
     return this.items;
   }
 
@@ -79,8 +86,8 @@ class Scene {
 
   /** Removes all items. */
   public clearItems() {
-    var items_copy = this.items
-    var scope = this;
+    let itemsCopy = this.items;
+    let scope = this;
     this.items.forEach((item) => {
       scope.removeItem(item, true);
     });
@@ -92,14 +99,14 @@ class Scene {
    * @param item The item to be removed.
    * @param dontRemove If not set, also remove the item from the items list.
    */
-  public removeItem(item: Items.Item, dontRemove?: boolean) {
+  public removeItem(item: Item, dontRemove?: boolean) {
     dontRemove = dontRemove || false;
     // use this for item meshes
     this.itemRemovedCallbacks.fire(item);
     item.removed();
     this.scene.remove(item);
     if (!dontRemove) {
-      Core.Utils.removeValue(this.items, item);
+      Utils.removeValue(this.items, item);
     }
   }
 
@@ -113,22 +120,25 @@ class Scene {
    * @param scale The initial scaling.
    * @param fixed True if fixed.
    */
-  public addItem(itemType: number, fileName: string, metadata, position: Vector3, rotation: number, scale: Vector3, fixed: boolean) {
+  public addItem(itemType: number, fileName: string, metadata: Metadata, position: Vector3, rotation: number, scale: Vector3, fixed: boolean) {
     itemType = itemType || 1;
-    var scope = this;
-    var loaderCallback = function (geometry: Geometry, materials: Material[]) {
-      var item = new (Items.Factory.getClass(itemType))(
+    let scope = this;
+    let loaderCallback = function (geometry: Geometry, materials: Material[]) {
+      let item = new (Factory.getClass(itemType))(
         scope.model,
-        metadata, geometry,
+        metadata,
+        geometry,
         new MultiMaterial(materials),
-        position, rotation, scale
+        position,
+        rotation,
+        scale
       );
       item.fixed = fixed || false;
       scope.items.push(item);
       scope.add(item);
       item.initObject();
       scope.itemLoadedCallbacks.fire(item);
-    }
+    };
 
     this.itemLoadingCallbacks.fire();
     this.loader.load(

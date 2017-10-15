@@ -74,7 +74,7 @@ function Main(model, element, canvasElement, opts) {
 
     let skybox = Skybox(scene);
 
-    scope.controls = Controls(camera, domElement);
+    scope.controls = new Controls(camera, domElement);
 
     hud = HUD(scope);
 
@@ -95,8 +95,7 @@ function Main(model, element, canvasElement, opts) {
 
     let lights = new this.Three.Lights(scene, model.floorplan);
 
-    floorplan = new this.Three.Floorplan(scene,
-      model.floorplan, scope.controls);
+    floorplan = new this.Three.Floorplan(scene, model.floorplan, scope.controls);
 
     animate();
 
