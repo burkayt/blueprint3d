@@ -19,7 +19,7 @@ var CameraButtons = function(blueprint3d) {
   function init() {
     // Camera controls
     $("#zoom-in").click(zoomIn);
-    $("#zoom-out").click(zoomOut);  
+    $("#zoom-out").click(zoomOut);
     $("#zoom-in").dblclick(preventDefault);
     $("#zoom-out").dblclick(preventDefault);
 
@@ -83,7 +83,7 @@ var CameraButtons = function(blueprint3d) {
 
 /*
  * Context menu for selected item
- */ 
+ */
 
 var ContextMenu = function(blueprint3d) {
 
@@ -183,7 +183,7 @@ var ModalEffects = function(blueprint3d) {
      blueprint3d.model.scene.itemLoadedCallbacks.add(function() {
       itemsLoading -= 1;
       update();
-    });   
+    });
 
     update();
   }
@@ -266,7 +266,7 @@ var SideMenu = function(blueprint3d, floorplanControls, modalEffects) {
       }
     }
   }
-  
+
   function setCurrentState(newState) {
 
     if (currentState == newState) {
@@ -276,7 +276,7 @@ var SideMenu = function(blueprint3d, floorplanControls, modalEffects) {
     // show the right tab as active
     if (currentState.tab !== newState.tab) {
       if (currentState.tab != null) {
-        currentState.tab.removeClass(ACTIVE_CLASS);          
+        currentState.tab.removeClass(ACTIVE_CLASS);
       }
       if (newState.tab != null) {
         newState.tab.addClass(ACTIVE_CLASS);
@@ -294,7 +294,7 @@ var SideMenu = function(blueprint3d, floorplanControls, modalEffects) {
     if (newState == scope.states.FLOORPLAN) {
       floorplanControls.updateFloorplanView();
       floorplanControls.handleWindowResize();
-    } 
+    }
 
     if (currentState == scope.states.FLOORPLAN) {
       blueprint3d.model.floorplan.update();
@@ -303,9 +303,9 @@ var SideMenu = function(blueprint3d, floorplanControls, modalEffects) {
     if (newState == scope.states.DEFAULT) {
       blueprint3d.three.updateWindowSize();
     }
- 
+
     // set new state
-    handleWindowResize();    
+    handleWindowResize();
     currentState = newState;
 
     scope.stateChangeCallbacks.fire(newState);
@@ -377,19 +377,19 @@ var TextureSelector = function (blueprint3d, sideMenu) {
 
   function wallClicked(halfEdge) {
     currentTarget = halfEdge;
-    $("#floorTexturesDiv").hide();  
-    $("#wallTextures").show();  
+    $("#floorTexturesDiv").hide();
+    $("#wallTextures").show();
   }
 
   function floorClicked(room) {
     currentTarget = room;
-    $("#wallTextures").hide();  
-    $("#floorTexturesDiv").show();  
+    $("#wallTextures").hide();
+    $("#floorTexturesDiv").show();
   }
 
   function reset() {
-    $("#wallTextures").hide();  
-    $("#floorTexturesDiv").hide();  
+    $("#wallTextures").hide();
+    $("#floorTexturesDiv").hide();
   }
 
   init();
@@ -424,15 +424,15 @@ var ViewerFloorplanner = function(blueprint3d) {
       $(draw).removeClass(activeStlye);
       $(remove).removeClass(activeStlye);
       $(move).removeClass(activeStlye);
-      if (mode == BP3D.Floorplanner.floorplannerModes.MOVE) {
+      if (mode == Floorplanner.floorplannerModes.MOVE) {
           $(move).addClass(activeStlye);
-      } else if (mode == BP3D.Floorplanner.floorplannerModes.DRAW) {
+      } else if (mode == Floorplanner.floorplannerModes.DRAW) {
           $(draw).addClass(activeStlye);
-      } else if (mode == BP3D.Floorplanner.floorplannerModes.DELETE) {
+      } else if (mode == Floorplanner.floorplannerModes.DELETE) {
           $(remove).addClass(activeStlye);
       }
 
-      if (mode == BP3D.Floorplanner.floorplannerModes.DRAW) {
+      if (mode == Floorplanner.floorplannerModes.DRAW) {
         $("#draw-walls-hint").show();
         scope.handleWindowResize();
       } else {
@@ -441,15 +441,15 @@ var ViewerFloorplanner = function(blueprint3d) {
     });
 
     $(move).click(function(){
-      scope.floorplanner.setMode(BP3D.Floorplanner.floorplannerModes.MOVE);
+      scope.floorplanner.setMode(Floorplanner.floorplannerModes.MOVE);
     });
 
     $(draw).click(function(){
-      scope.floorplanner.setMode(BP3D.Floorplanner.floorplannerModes.DRAW);
+      scope.floorplanner.setMode(Floorplanner.floorplannerModes.DRAW);
     });
 
     $(remove).click(function(){
-      scope.floorplanner.setMode(BP3D.Floorplanner.floorplannerModes.DELETE);
+      scope.floorplanner.setMode(Floorplanner.floorplannerModes.DELETE);
     });
   }
 
@@ -463,7 +463,7 @@ var ViewerFloorplanner = function(blueprint3d) {
   };
 
   init();
-}; 
+};
 
 var mainControls = function(blueprint3d) {
   var blueprint3d = blueprint3d;
@@ -515,14 +515,14 @@ $(document).ready(function() {
     threeCanvasElement: 'three-canvas',
     textureDir: "models/textures/",
     widget: false
-  }
-  var blueprint3d = new BP3D.Blueprint3d(opts);
+  };
+  var blueprint3d = new Blueprint3d(opts);
 
   var modalEffects = new ModalEffects(blueprint3d);
   var viewerFloorplanner = new ViewerFloorplanner(blueprint3d);
   var contextMenu = new ContextMenu(blueprint3d);
   var sideMenu = new SideMenu(blueprint3d, viewerFloorplanner, modalEffects);
-  var textureSelector = new TextureSelector(blueprint3d, sideMenu);        
+  var textureSelector = new TextureSelector(blueprint3d, sideMenu);
   var cameraButtons = new CameraButtons(blueprint3d);
   mainControls(blueprint3d);
 

@@ -1,7 +1,7 @@
 import { BackSide, Color, Mesh, ShaderMaterial, SphereGeometry } from 'three'
-import Scene from '../model/scene'
+import {Scene} from '../model/scene'
 
-function Skybox(scene: Scene) {
+export function Skybox(scene: Scene) {
   let topColor = 0xffffff // 0xD8ECF9
   let bottomColor = 0xe9e9e9 // 0xf9f9f9;//0x565e63
   let verticalOffset = 500
@@ -60,4 +60,4 @@ function Skybox(scene: Scene) {
   init()
 }
 
-export default Skybox
+

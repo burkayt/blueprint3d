@@ -10,7 +10,7 @@
 import {OrbitControls, Vector2, Vector3} from 'three';
 
 
-class Controls extends OrbitControls {
+export class Controls extends OrbitControls {
 
   // Set to false to disable this control
   enabled = true;
@@ -559,4 +559,3 @@ class Controls extends OrbitControls {
 
 };
 
-export default Controls;

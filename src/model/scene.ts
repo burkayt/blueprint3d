@@ -1,16 +1,16 @@
 import * as THREE from 'three';
 import {Geometry, JSONLoader, Material, Mesh, MultiMaterial, Vector3} from 'three';
 import {Factory} from "../items/factory";
-import Item from '../items/item';
-import Model from './model';
-import Utils from '../core/utils';
-import Metadata from '../items/metadata';
+import {Item} from '../items/item';
+import {Model} from './model';
+import {Utils} from '../core/utils';
+import {Metadata} from '../items/metadata';
 
 
 /**
  * The Scene is a manager of Items and also links to a ThreeJS scene.
  */
-class Scene {
+export class Scene {
 
   /** Item */
   public itemLoadedCallbacks = $.Callbacks();
@@ -32,7 +32,6 @@ class Scene {
 
   /** */
   private itemLoadingCallbacks = $.Callbacks();
-
 
 
   /**
@@ -149,4 +148,3 @@ class Scene {
   }
 }
 
-export default Scene;

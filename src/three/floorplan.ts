@@ -1,10 +1,10 @@
-import Floor from './floor'
-import Scene from '../model/scene'
+import {Floor} from './floor'
+import {Scene} from '../model/scene'
 import { Floorplan } from '../model/floorplan'
-import Controls from './controls'
-import Edge from './edge'
+import {Controls} from './controls'
+import {Edge} from './edge'
 
-let FloorplanFunc: Function = function(
+export let FloorplanFunc: Function = function(
   scene: Scene,
   floorplan: Floorplan,
   controls: Controls
@@ -41,4 +41,3 @@ let FloorplanFunc: Function = function(
   }
 }
 
-export default FloorplanFunc

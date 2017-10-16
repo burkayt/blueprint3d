@@ -19,14 +19,14 @@ import {
   Vector2,
   Vector3
 } from 'three'
-import Controls from './controls'
-import HalfEdge from '../model/half_edge'
-import Scene from '../model/scene'
-import WallItem from '../items/wall_item'
-import Point from '../model/point'
-import Utils from '../core/utils'
+import {Controls} from './controls'
+import {HalfEdge} from '../model/half_edge'
+import {Scene} from '../model/scene'
+import {WallItem} from '../items/wall_item'
+import {Point} from '../model/point'
+import {Utils} from '../core/utils'
 
-let Edge = function(scene: Scene, edge: HalfEdge, controls: Controls) {
+export let Edge = function (scene: Scene, edge: HalfEdge, controls: Controls) {
   let scope = Edge
   let wall = edge.wall
   let front = edge.front
@@ -126,7 +126,7 @@ let Edge = function(scene: Scene, edge: HalfEdge, controls: Controls) {
     // callback is fired when texture loads
     callback =
       callback ||
-      function() {
+      function () {
         scene.needsUpdate = true
       }
     let textureData = edge.getTexture()
@@ -209,13 +209,11 @@ let Edge = function(scene: Scene, edge: HalfEdge, controls: Controls) {
   }
 
   // start, end have x and y attributes (i.e. corners)
-  function makeWall(
-    start: Point,
-    end: Point,
-    transform: Matrix4,
-    invTransform: Matrix4,
-    material: Material | Material[]
-  ) {
+  function makeWall(start: Point,
+                    end: Point,
+                    transform: Matrix4,
+                    invTransform: Matrix4,
+                    material: Material | Material[]) {
     let v1 = toVec3(start)
     let v2 = toVec3(end)
     let v3 = v2.clone()
@@ -294,12 +292,10 @@ let Edge = function(scene: Scene, edge: HalfEdge, controls: Controls) {
     return mesh
   }
 
-  function buildSideFillter(
-    p1: Point,
-    p2: Point,
-    height: number,
-    color: number | string | Color
-  ) {
+  function buildSideFillter(p1: Point,
+                            p2: Point,
+                            height: number,
+                            color: number | string | Color) {
     let points = [
       toVec3(p1),
       toVec3(p2),
@@ -323,12 +319,10 @@ let Edge = function(scene: Scene, edge: HalfEdge, controls: Controls) {
     return filler
   }
 
-  function buildFiller(
-    edge: HalfEdge,
-    height: number,
-    side: Side,
-    color: number | string | Color
-  ) {
+  function buildFiller(edge: HalfEdge,
+                       height: number,
+                       side: Side,
+                       color: number | string | Color) {
     let points = [
       toVec2(edge.exteriorStart()),
       toVec2(edge.exteriorEnd()),
@@ -362,4 +356,3 @@ let Edge = function(scene: Scene, edge: HalfEdge, controls: Controls) {
   init()
 }
 
-export default Edge

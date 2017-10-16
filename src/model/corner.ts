@@ -1,7 +1,7 @@
 /** */
 import {Wall} from './wall';
 import {Floorplan} from './floorplan';
-import Utils from '../core/utils';
+import {Utils} from '../core/utils';
 
 const cornerTolerance: number = 20;
 

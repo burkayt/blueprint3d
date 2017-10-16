@@ -5,18 +5,11 @@
  var Polygon = require('polygon')
  */
 
-import { Corner } from './corner'
-import {
-  DoubleSide,
-  Mesh,
-  MeshBasicMaterial,
-  Shape,
-  ShapeGeometry,
-  Vector2
-} from 'three'
-import { Floorplan } from './floorplan'
-import Utils from '../core/utils'
-import HalfEdge from './half_edge'
+import {Corner} from './corner'
+import {DoubleSide, Mesh, MeshBasicMaterial, Shape, ShapeGeometry, Vector2} from 'three'
+import {Floorplan} from './floorplan'
+import {Utils} from '../core/utils'
+import {HalfEdge} from './half_edge'
 
 /** Default texture to be used if nothing is provided. */
 const defaultRoomTexture = {
@@ -63,7 +56,7 @@ export class Room {
   }
 
   private getUuid(): string {
-    let cornerUuids = Utils.map(this.corners, function(c: any) {
+    let cornerUuids = Utils.map(this.corners, function (c: any) {
       return c.id
     })
     cornerUuids.sort()
@@ -73,11 +66,9 @@ export class Room {
   /**
    * textureStretch always true, just an argument for consistency with walls
    */
-  private setTexture(
-    textureUrl: string,
-    textureStretch: any,
-    textureScale: number
-  ) {
+  private setTexture(textureUrl: string,
+                     textureStretch: any,
+                     textureScale: number) {
     let uuid = this.getUuid()
     this.floorplan.setFloorTexture(uuid, textureUrl, textureScale)
     this.floorChangeCallbacks.fire()

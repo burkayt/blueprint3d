@@ -1,7 +1,7 @@
 /** Collection of utility functions. */
-import Point from '../model/point';
+import {Point} from '../model/point';
 
-class Utils {
+export class Utils {
 
   /** Determines the distance of a point from a line.
    * @param x Point's x coordinate.
@@ -363,4 +363,3 @@ class Utils {
   }
 }
 
-export default Utils;

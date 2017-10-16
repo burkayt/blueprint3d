@@ -2,8 +2,8 @@ import {Mesh, Vector3} from 'three';
 import {Wall} from './wall';
 import {Corner} from './corner';
 import {Room} from './room';
-import HalfEdge from './half_edge';
-import Utils from '../core/utils';
+import {HalfEdge} from './half_edge';
+import {Utils} from '../core/utils';
 
 /** */
 const defaultFloorPlanTolerance = 10.0;
@@ -355,7 +355,7 @@ export class Floorplan {
       let next: any = {
         corner: secondCorner,
         previousCorners: [firstCorner]
-      } ;
+      };
       let visited: any = {};
       if (firstCorner.id) {
         visited[firstCorner.id] = true;
@@ -364,7 +364,7 @@ export class Floorplan {
       while (next) {
         // update previous corners, current corner, and visited corners
         let currentCorner = next.corner;
-        if(currentCorner.id) {
+        if (currentCorner.id) {
           visited[currentCorner.id] = true;
         }
 
@@ -445,7 +445,6 @@ export class Floorplan {
   private removeCorner(corner: Corner) {
     Utils.removeValue(this.corners, corner);
   }
-
 
 
   /** Removes a wall.

@@ -2,7 +2,7 @@
  * A Model connects a Floorplan and a Scene.
  */
 import {Floorplan} from './floorplan';
-import Scene from './scene';
+import {Scene} from './scene';
 import {Vector3} from 'three';
 
 export class Model {
@@ -105,4 +105,3 @@ export class Model {
 }
 
 
-export default Model;

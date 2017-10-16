@@ -1,14 +1,14 @@
 /**
  * A Wall Item is an entity to be placed related to a wall.
  */
-import Item from './item'
-import HalfEdge from '../model/half_edge'
-import { Geometry, Mesh, MultiMaterial, Vector2, Vector3 } from 'three'
-import Metadata from './metadata'
-import Model from '../model/model'
-import Utils from '../core/utils'
+import {Item} from './item'
+import {HalfEdge} from '../model/half_edge'
+import {Geometry, Mesh, MultiMaterial, Vector2, Vector3} from 'three'
+import {Metadata} from './metadata'
+import {Model} from '../model/model'
+import {Utils} from '../core/utils'
 
-abstract class WallItem extends Item {
+export abstract class WallItem extends Item {
   /** The currently applied wall edge. */
   protected currentWallEdge: HalfEdge | null = null
   /* TODO:
@@ -42,15 +42,13 @@ abstract class WallItem extends Item {
   /** */
   private sizeY = 0
 
-  constructor(
-    protected model: Model,
-    metadata: Metadata,
-    geometry: Geometry,
-    material: MultiMaterial,
-    position: Vector3,
-    rotation: number,
-    scale: Vector3
-  ) {
+  constructor(protected model: Model,
+              metadata: Metadata,
+              geometry: Geometry,
+              material: MultiMaterial,
+              position: Vector3,
+              rotation: number,
+              scale: Vector3) {
     super(model, metadata, geometry, material, position, rotation, scale)
 
     this.allowRotate = false
@@ -92,8 +90,8 @@ abstract class WallItem extends Item {
     if (this.boundToFloor) {
       this.position.y =
         0.5 *
-          (this.geometry.boundingBox.max.y - this.geometry.boundingBox.min.y) *
-          this.scale.y +
+        (this.geometry.boundingBox.max.y - this.geometry.boundingBox.min.y) *
+        this.scale.y +
         0.01
     }
 
@@ -234,8 +232,8 @@ abstract class WallItem extends Item {
     if (this.boundToFloor) {
       vec3.y =
         0.5 *
-          (this.geometry.boundingBox.max.y - this.geometry.boundingBox.min.y) *
-          this.scale.y +
+        (this.geometry.boundingBox.max.y - this.geometry.boundingBox.min.y) *
+        this.scale.y +
         0.01
     } else {
       if (vec3.y < this.sizeY / 2.0 + tolerance) {
@@ -251,4 +249,3 @@ abstract class WallItem extends Item {
   }
 }
 
-export default WallItem

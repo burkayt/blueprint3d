@@ -1,14 +1,21 @@
 import {
-  Camera, Intersection, Mesh, MeshBasicMaterial, Object3D, PlaneGeometry, Raycaster, Vector2,
+  Camera,
+  Intersection,
+  Mesh,
+  MeshBasicMaterial,
+  Object3D,
+  PlaneGeometry,
+  Raycaster,
+  Vector2,
   Vector3
 } from 'three';
-import Scene from '../model/scene';
-import Model from '../model/model';
-import Item from '../items/item';
-import Utils from '../core/utils';
+import {Scene} from '../model/scene';
+import {Model} from '../model/model';
+import {Item} from '../items/item';
+import {Utils} from '../core/utils';
 
 
-let Controller: any = function (three:any, model: Model, camera: Camera, element: any, controls: any, hud: any) {
+export let Controller: any = function (three: any, model: Model, camera: Camera, element: any, controls: any, hud: any) {
 
   let scope = Controller;
 
@@ -108,7 +115,7 @@ let Controller: any = function (three:any, model: Model, camera: Camera, element
   function checkWallsAndFloors(event?: any) {
 
     // double click on a wall or floor brings up texture change modal
-    if (state ===  states.UNSELECTED && mouseoverObject == null) {
+    if (state === states.UNSELECTED && mouseoverObject == null) {
       // check walls
       let wallEdgePlanes = model.floorplan.wallEdgePlanes();
       let wallIntersects = scope.getIntersections(
@@ -360,7 +367,7 @@ let Controller: any = function (three:any, model: Model, camera: Camera, element
 
   // filter by normals will only return objects facing the camera
   // objects can be an array of objects or a single object
-  scope.getIntersections = function (vec2:Vector2, objects:Object3D, filterByNormals: boolean, onlyVisible: boolean, recursive: boolean, linePrecision: number) {
+  scope.getIntersections = function (vec2: Vector2, objects: Object3D, filterByNormals: boolean, onlyVisible: boolean, recursive: boolean, linePrecision: number) {
 
     let vector = mouseToVec3(vec2);
 
@@ -446,4 +453,3 @@ let Controller: any = function (three:any, model: Model, camera: Camera, element
   init();
 }
 
-export default Controller;

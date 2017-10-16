@@ -2,10 +2,10 @@
 import {Floorplan} from '../model/floorplan';
 import {Floorplanner} from './floorplanner';
 import {Wall} from '../model/wall';
-import HalfEdge from '../model/half_edge';
+import {HalfEdge} from '../model/half_edge';
 import {Dimensioning} from '../core/dimensioning';
-import Utils from '../core/utils';
-import Point from '../model/point';
+import {Utils} from '../core/utils';
+import {Point} from '../model/point';
 import {Room} from '../model/room';
 import {Corner} from '../model/corner';
 

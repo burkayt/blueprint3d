@@ -1,5 +1,5 @@
 /** Meta data for items. */
-interface Metadata {
+export interface Metadata {
   /** Name of the item. */
   itemName?: string;
 
@@ -13,4 +13,3 @@ interface Metadata {
   resizable?: boolean;
 }
 
-export default Metadata;

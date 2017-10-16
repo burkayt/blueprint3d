@@ -1,27 +1,17 @@
-import {
-  ImageUtils,
-  PCFSoftShadowMap,
-  PerspectiveCamera,
-  Vector2,
-  Vector3,
-  WebGLRenderer
-} from 'three'
-import Controller from './controller'
-import Controls from './controls'
-import HUD from './hud'
-import Skybox from './skybox'
-import Model from '../model/model'
-import { Floorplan } from '../model/floorplan'
-import Lights from './lights'
+import {ImageUtils, PCFSoftShadowMap, PerspectiveCamera, Vector2, Vector3, WebGLRenderer} from 'three'
+import {Controller} from './controller'
+import {Controls} from './controls'
+import {HUD} from './hud'
+import {Skybox} from './skybox'
+import {Model} from '../model/model'
+import {Lights} from './lights'
 
-import FloorplanFunc from './floorplan'
+import {FloorplanFunc} from './floorplan'
 
-let Main = function(
-  model: Model,
-  opts: any,
-  element?: string,
-  canvasElement?: string
-) {
+export let Main = function (model: Model,
+                            opts: any,
+                            element?: string,
+                            canvasElement?: string) {
   let optins: any = {
     resize: true,
     pushHref: false,
@@ -113,13 +103,13 @@ let Main = function(
     animate()
 
     elem
-      .mouseenter(function() {
+      .mouseenter(function () {
         mouseOver = true
       })
-      .mouseleave(function() {
+      .mouseleave(function () {
         mouseOver = false
       })
-      .click(function() {
+      .click(function () {
         hasClicked = true
       })
 
@@ -134,36 +124,36 @@ let Main = function(
     }
   }
 
-  let dataUrl = function() {
+  let dataUrl = function () {
     let dataUrl = renderer.domElement.toDataURL('image/png')
     return dataUrl
   }
 
-  let stopSpin = function() {
+  let stopSpin = function () {
     hasClicked = true
   }
 
-  let options = function() {
+  let options = function () {
     return optins
   }
 
-  let getModel = function() {
+  let getModel = function () {
     return model
   }
 
-  let getScene = function() {
+  let getScene = function () {
     return scene
   }
 
-  let getController = function() {
+  let getController = function () {
     return controller
   }
 
-  let getCamera = function() {
+  let getCamera = function () {
     return camera
   }
 
-  let needsUpdate = function() {
+  let needsUpdate = function () {
     needsUpdated = true
   }
 
@@ -198,25 +188,25 @@ let Main = function(
 
   function animate() {
     let delay = 50
-    setTimeout(function() {
+    setTimeout(function () {
       requestAnimationFrame(animate)
     }, delay)
     render()
   }
 
-  let rotatePressed = function() {
+  let rotatePressed = function () {
     controller.rotatePressed()
   }
 
-  let rotateReleased = function() {
+  let rotateReleased = function () {
     controller.rotateReleased()
   }
 
-  let setCursorStyle = function(cursorStyle: string) {
+  let setCursorStyle = function (cursorStyle: string) {
     domElement.style.cursor = cursorStyle
   }
 
-  let updateWindowSize = function() {
+  let updateWindowSize = function () {
     heightMargin = elem.offset()!.top
     widthMargin = elem.offset()!.left
 
@@ -236,7 +226,7 @@ let Main = function(
     needsUpdated = true
   }
 
-  let centerCamera = function() {
+  let centerCamera = function () {
     let yOffset = 150.0
 
     let pan = model.floorplan.getCenter()
@@ -257,7 +247,7 @@ let Main = function(
   init()
 
   // x,y are relative to top left corner of viewer
-  let projectVector = function(vec3: Vector3, ignoreMargin: boolean) {
+  let projectVector = function (vec3: Vector3, ignoreMargin: boolean) {
     ignoreMargin = ignoreMargin || false
 
     let widthHalf
@@ -287,4 +277,3 @@ let Main = function(
   }
 }
 
-export default Main

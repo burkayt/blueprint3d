@@ -3,7 +3,6 @@ import {
   Geometry,
   LineBasicMaterial,
   LineSegments,
-  Material,
   Mesh,
   MeshBasicMaterial,
   Object3D,
@@ -11,12 +10,12 @@ import {
   SphereGeometry,
   Vector3
 } from 'three'
-import Item from '../items/item'
+import {Item} from '../items/item'
 
 /**
  * Drawings on "top" of the scene. e.g. rotate arrows
  */
-let HUD = function(three: any) {
+export let HUD = function (three: any) {
   let scene = new Scene()
 
   let selectedItem: any = null
@@ -32,11 +31,11 @@ let HUD = function(three: any) {
 
   let activeObject: Mesh | null = null
 
-  let getScene = function() {
+  let getScene = function () {
     return scene
   }
 
-  let getObject = function() {
+  let getObject = function () {
     return activeObject
   }
 
@@ -68,12 +67,12 @@ let HUD = function(three: any) {
     resetSelectedItem()
   }
 
-  let setRotating = function(isRotating: boolean) {
+  let setRotating = function (isRotating: boolean) {
     rotating = isRotating
     setColor()
   }
 
-  let setMouseover = function(isMousedOver: boolean) {
+  let setMouseover = function (isMousedOver: boolean) {
     mouseover = isMousedOver
     setColor()
   }
@@ -91,7 +90,7 @@ let HUD = function(three: any) {
     return mouseover || rotating ? hoverColor : color
   }
 
-  let update = function() {
+  let update = function () {
     if (activeObject) {
       activeObject.rotation.y = selectedItem.rotation.y
       activeObject.position.x = selectedItem.position.x
@@ -99,7 +98,7 @@ let HUD = function(three: any) {
     }
   }
 
-  let makeLineGeometry = function(item: Item) {
+  let makeLineGeometry = function (item: Item) {
     let geometry = new Geometry()
 
     geometry.vertices.push(new Vector3(0, 0, 0), rotateVector(item))
@@ -171,4 +170,3 @@ let HUD = function(three: any) {
   init()
 }
 
-export default HUD

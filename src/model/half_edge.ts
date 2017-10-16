@@ -1,15 +1,8 @@
-import {
-  Face3,
-  Geometry,
-  Matrix4,
-  Mesh,
-  MeshBasicMaterial,
-  Vector3
-} from 'three'
-import { Room } from './room'
-import { Wall } from './wall'
-import Utils from '../core/utils'
-import Point from './point'
+import {Face3, Geometry, Matrix4, Mesh, MeshBasicMaterial, Vector3} from 'three'
+import {Room} from './room'
+import {Wall} from './wall'
+import {Utils} from '../core/utils'
+import {Point} from './point'
 
 /**
  * Half Edges are created by Room.
@@ -18,7 +11,7 @@ import Point from './point'
  *
  * A wall can have two half edges if it is visible from both sides.
  */
-class HalfEdge {
+export class HalfEdge {
   /** The successor edge in CCW ??? direction. */
   public next: HalfEdge
 
@@ -55,11 +48,9 @@ class HalfEdge {
    * @param wall The corresponding wall.
    * @param front True if front side.
    */
-  constructor(
-    private room: Room | null,
-    public wall: Wall,
-    public front: boolean
-  ) {
+  constructor(private room: Room | null,
+              public wall: Wall,
+              public front: boolean) {
     this.front = front || false
 
     this.offset = wall.thickness / 2.0
@@ -86,11 +77,9 @@ class HalfEdge {
   /**
    *
    */
-  public setTexture(
-    textureUrl: string,
-    textureStretch: boolean,
-    textureScale: number
-  ) {
+  public setTexture(textureUrl: string,
+                    textureStretch: boolean,
+                    textureScale: number) {
     let texture = {
       url: textureUrl,
       stretch: textureStretch,
@@ -220,12 +209,10 @@ class HalfEdge {
     ]
   }
 
-  private computeTransforms(
-    transform: Matrix4,
-    invTransform: Matrix4,
-    start: Point,
-    end: Point
-  ) {
+  private computeTransforms(transform: Matrix4,
+                            invTransform: Matrix4,
+                            start: Point,
+                            end: Point) {
     let v1 = start
     let v2 = end
 
@@ -266,10 +253,8 @@ class HalfEdge {
   /**
    * Gets CCW angle from v1 to v2
    */
-  private halfAngleVector(
-    v1: HalfEdge,
-    v2: HalfEdge
-  ): { x: number; y: number } {
+  private halfAngleVector(v1: HalfEdge,
+                          v2: HalfEdge): { x: number; y: number } {
     let v1startX
     let v1startY
     let v1endX
@@ -338,4 +323,3 @@ class HalfEdge {
   }
 }
 
-export default HalfEdge

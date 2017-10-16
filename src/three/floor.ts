@@ -10,11 +10,11 @@ import {
   ShapeGeometry,
   Vector2
 } from 'three'
-import { Corner } from '../model/corner'
-import Scene from '../model/scene'
-import { Room } from '../model/room'
+import {Corner} from '../model/corner'
+import {Scene} from '../model/scene'
+import {Room} from '../model/room'
 
-let Floor = function(scene: Scene, room: Room): any {
+export let Floor = function (scene: Scene, room: Room): any {
   let floorPlane: Mesh | null = null
   let roofPlane = null
 
@@ -24,7 +24,7 @@ let Floor = function(scene: Scene, room: Room): any {
     room.fireOnFloorChange(redraw)
     floorPlane = buildFloor()
     // roofs look weird, so commented out
-    //roofPlane = buildRoof();
+    // roofPlane = buildRoof();
   }
 
   function redraw() {
@@ -89,26 +89,25 @@ let Floor = function(scene: Scene, room: Room): any {
     return roof
   }
 
-  let addToScene = function() {
+  let addToScene = function () {
     if (floorPlane) {
       scene.add(floorPlane)
     }
-    //scene.add(roofPlane);
+    // scene.add(roofPlane);
     // hack so we can do intersect testing
     if (room.floorPlane) {
       scene.add(room.floorPlane)
     }
   }
 
-  let removeFromScene = function() {
+  let removeFromScene = function () {
     if (floorPlane) {
       scene.remove(floorPlane)
     }
-    //scene.remove(roofPlane);
+    // scene.remove(roofPlane);
     if (room.floorPlane) {
       scene.remove(room.floorPlane)
     }
   }
 }
 
-export default Floor

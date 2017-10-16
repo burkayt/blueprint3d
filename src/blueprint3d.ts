@@ -2,8 +2,8 @@
 // import "core-js/fn/array.find"
 // ...
 
-import Model from './model/model'
-import Main from './three/main'
+import {Model} from './model/model'
+import {Main} from './three/main'
 import { Floorplanner } from './floorplanner/floorplanner'
 
 /** Startup options. */

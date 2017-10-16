@@ -2,24 +2,27 @@ import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import sourceMaps from 'rollup-plugin-sourcemaps'
 import camelCase from 'lodash.camelcase'
+import multiEntry from 'rollup-plugin-multi-entry';
 
-const pkg = require('./package.json')
+const pkg = require('./package.json');
 
-const libraryName = 'blueprint'
+const libraryName = 'blueprint3d';
 
 export default {
-  entry: `compiled/${libraryName}.js`,
+  entry: 'compiled/**/**.js',
   targets: [
     { dest: pkg.main, moduleName: camelCase(libraryName), format: 'umd' },
     { dest: pkg.module, format: 'es' },
   ],
-  sourcemap: true,
+  sourceMap: true,
   // Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
   external: [],
   watch: {
     include: 'compiled/**',
   },
   plugins: [
+    multiEntry(),
+
     // Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
     commonjs(),
     // Allow node_modules resolution, so you can use 'external' to control

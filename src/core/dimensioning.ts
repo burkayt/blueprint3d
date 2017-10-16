@@ -21,9 +21,9 @@ export class Dimensioning {
   public static cmToMeasure(cm: number): string {
     switch (Configuration.getStringValue(configDimUnit)) {
       case dimInch:
-        var realFeet = ((cm * 0.393700) / 12);
-        var feet = Math.floor(realFeet);
-        var inches = Math.round((realFeet - feet) * 12);
+        let realFeet = ((cm * 0.393700) / 12);
+        let feet = Math.floor(realFeet);
+        let inches = Math.round((realFeet - feet) * 12);
         return feet + "'" + inches + '"';
       case dimMilliMeter:
         return "" + Math.round(10 * cm) + " mm";

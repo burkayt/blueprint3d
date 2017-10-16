@@ -10,16 +10,16 @@ import {
   MultiMaterial,
   Vector3
 } from 'three'
-import Scene from '../model/scene'
-import Metadata from './metadata'
-import Model from '../model/model'
-import Utils from '../core/utils'
+import {Scene} from '../model/scene'
+import {Metadata} from './metadata'
+import {Model} from '../model/model'
+import {Utils} from '../core/utils'
 
 /**
  * An Item is an abstract entity for all things placed in the scene,
  * e.g. at walls or on the floor.
  */
-abstract class Item extends Mesh {
+export abstract class Item extends Mesh {
   /** */
   public fixed = false
 
@@ -74,15 +74,13 @@ abstract class Item extends Mesh {
    * @param rotation TODO
    * @param scale TODO
    */
-  constructor(
-    protected model: Model,
-    public metadata: Metadata,
-    geometry: Geometry,
-    material: MultiMaterial,
-    position: Vector3,
-    rotation: number,
-    scale: Vector3
-  ) {
+  constructor(protected model: Model,
+              public metadata: Metadata,
+              geometry: Geometry,
+              material: MultiMaterial,
+              position: Vector3,
+              rotation: number,
+              scale: Vector3) {
     super()
 
     this.scene = this.model.scene
@@ -113,11 +111,11 @@ abstract class Item extends Mesh {
     this.geometry.applyMatrix(
       new Matrix4().makeTranslation(
         -0.5 *
-          (this.geometry.boundingBox.max.x + this.geometry.boundingBox.min.x),
+        (this.geometry.boundingBox.max.x + this.geometry.boundingBox.min.x),
         -0.5 *
-          (this.geometry.boundingBox.max.y + this.geometry.boundingBox.min.y),
+        (this.geometry.boundingBox.max.y + this.geometry.boundingBox.min.y),
         -0.5 *
-          (this.geometry.boundingBox.max.z + this.geometry.boundingBox.min.z)
+        (this.geometry.boundingBox.max.z + this.geometry.boundingBox.min.z)
       )
     )
     this.geometry.computeBoundingBox()
@@ -316,10 +314,10 @@ abstract class Item extends Mesh {
     // var max = position.clone().add(halfSize);
 
     let corners = [
-      { x: c1.x, y: c1.z },
-      { x: c2.x, y: c2.z },
-      { x: c3.x, y: c3.z },
-      { x: c4.x, y: c4.z }
+      {x: c1.x, y: c1.z},
+      {x: c2.x, y: c2.z},
+      {x: c3.x, y: c3.z},
+      {x: c4.x, y: c4.z}
     ]
 
     return corners
@@ -348,11 +346,9 @@ abstract class Item extends Mesh {
   }
 
   /** */
-  public createGlow(
-    color: number | string | Color,
-    opacity: number,
-    ignoreDepth: boolean
-  ): Mesh {
+  public createGlow(color: number | string | Color,
+                    opacity: number,
+                    ignoreDepth: boolean): Mesh {
     ignoreDepth = ignoreDepth || false
     opacity = opacity || 0.2
     let glowMaterial = new MeshBasicMaterial({
@@ -384,4 +380,3 @@ abstract class Item extends Mesh {
   }
 }
 
-export default Item

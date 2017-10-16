@@ -1,8 +1,8 @@
 import {Corner} from './corner';
-import Utils from '../core/utils';
+import {Utils} from '../core/utils';
 import {Configuration, configWallHeight, configWallThickness} from '../core/configuration';
-import Item from '../items/item';
-import HalfEdge from './half_edge';
+import {Item} from '../items/item';
+import {HalfEdge} from './half_edge';
 
 /** The default wall texture. */
 const defaultWallTexture = {

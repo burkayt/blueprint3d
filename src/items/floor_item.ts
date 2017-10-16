@@ -2,13 +2,13 @@
  * A Floor Item is an entity to be placed related to a floor.
  */
 
-import Item from './item';
-import Model from '../model/model';
-import Metadata from './metadata';
+import {Item} from './item';
+import {Model} from '../model/model';
+import {Metadata} from './metadata';
 import {Geometry, Intersection, MultiMaterial, Vector3} from 'three';
-import Utils from '../core/utils';
+import {Utils} from '../core/utils';
 
-abstract class FloorItem extends Item {
+export abstract class FloorItem extends Item {
   constructor(model: Model, metadata: Metadata, geometry: Geometry, material: MultiMaterial, position: Vector3, rotation: number, scale: Vector3) {
     super(model, metadata, geometry, material, position, rotation, scale);
   };
@@ -79,4 +79,3 @@ abstract class FloorItem extends Item {
   }
 }
 
-export default FloorItem;

@@ -1,7 +1,7 @@
 import { DirectionalLight, HemisphereLight, Scene, Vector3 } from 'three'
 import { Floorplan } from '../model/floorplan'
 
-function Lights(scene: Scene, floorplan: Floorplan) {
+export function Lights(scene: Scene, floorplan: Floorplan) {
   let tol = 1
   let height = 300 // TODO: share with Blueprint.Wall
 
@@ -66,4 +66,3 @@ function Lights(scene: Scene, floorplan: Floorplan) {
   init()
 }
 
-export default Lights

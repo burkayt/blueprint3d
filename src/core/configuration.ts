@@ -32,7 +32,7 @@ export class Configuration {
   public static getStringValue(key: string): string {
     switch (key) {
       case configDimUnit:
-        return <string>this.data[key];
+        return this.data[key] as string;
       default:
         throw new Error("Invalid string configuration parameter: " + key);
     }
