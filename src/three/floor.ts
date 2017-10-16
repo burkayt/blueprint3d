@@ -9,69 +9,64 @@ import {
   Shape,
   ShapeGeometry,
   Vector2
-} from 'three';
+} from 'three'
+import { Corner } from '../model/corner'
+import Scene from '../model/scene'
+import { Room } from '../model/room'
 
-function Floor(scene, room) {
+let Floor = function(scene: Scene, room: Room): any {
+  let floorPlane: Mesh | null = null
+  let roofPlane = null
 
-  let scope = this;
-
-  this.room = room;
-  let scene = scene;
-
-  let floorPlane = null;
-  let roofPlane = null;
-
-  init();
+  init()
 
   function init() {
-    scope.room.fireOnFloorChange(redraw);
-    floorPlane = buildFloor();
+    room.fireOnFloorChange(redraw)
+    floorPlane = buildFloor()
     // roofs look weird, so commented out
     //roofPlane = buildRoof();
   }
 
   function redraw() {
-    scope.removeFromScene();
-    floorPlane = buildFloor();
-    scope.addToScene();
+    removeFromScene()
+    floorPlane = buildFloor()
+    addToScene()
   }
 
   function buildFloor() {
-    let textureSettings = scope.room.getTexture();
+    let textureSettings = room.getTexture()
     // setup texture
-    let floorTexture = ImageUtils.loadTexture(textureSettings.url);
-    floorTexture.wrapS = RepeatWrapping;
-    floorTexture.wrapT = RepeatWrapping;
-    floorTexture.repeat.set(1, 1);
+    let floorTexture = ImageUtils.loadTexture(textureSettings.url)
+    floorTexture.wrapS = RepeatWrapping
+    floorTexture.wrapT = RepeatWrapping
+    floorTexture.repeat.set(1, 1)
     let floorMaterialTop = new MeshPhongMaterial({
       map: floorTexture,
       side: DoubleSide,
       // ambient: 0xffffff, TODO_Ekki
       color: 0xcccccc,
       specular: 0x0a0a0a
-    });
+    })
 
-    let textureScale = textureSettings.scale;
+    let textureScale = textureSettings.scale
     // http://stackoverflow.com/questions/19182298/how-to-texture-a-three-js-mesh-created-with-shapegeometry
     // scale down coords to fit 0 -> 1, then rescale
 
-    let points = [];
-    scope.room.interiorCorners.forEach((corner) => {
-      points.push(new Vector2(
-        corner.x / textureScale,
-        corner.y / textureScale));
-    });
-    let shape = new Shape(points);
+    let points: Vector2[] = []
+    room.interiorCorners.forEach((corner: Corner) => {
+      points.push(new Vector2(corner.x / textureScale, corner.y / textureScale))
+    })
+    let shape = new Shape(points)
 
-    let geometry = new ShapeGeometry(shape);
+    let geometry = new ShapeGeometry(shape)
 
-    let floor = new Mesh(geometry, floorMaterialTop);
+    let floor = new Mesh(geometry, floorMaterialTop)
 
-    floor.rotation.set(Math.PI / 2, 0, 0);
-    floor.scale.set(textureScale, textureScale, textureScale);
-    floor.receiveShadow = true;
-    floor.castShadow = false;
-    return floor;
+    floor.rotation.set(Math.PI / 2, 0, 0)
+    floor.scale.set(textureScale, textureScale, textureScale)
+    floor.receiveShadow = true
+    floor.castShadow = false
+    return floor
   }
 
   function buildRoof() {
@@ -79,35 +74,41 @@ function Floor(scene, room) {
     let roofMaterial = new MeshBasicMaterial({
       side: FrontSide,
       color: 0xe5e5e5
-    });
+    })
 
-    let points = [];
-    scope.room.interiorCorners.forEach((corner) => {
-      points.push(new Vector2(
-        corner.x,
-        corner.y));
-    });
-    let shape = new Shape(points);
-    let geometry = new ShapeGeometry(shape);
-    let roof = new Mesh(geometry, roofMaterial);
+    let points: Vector2[] = []
+    room.interiorCorners.forEach((corner: Corner) => {
+      points.push(new Vector2(corner.x, corner.y))
+    })
+    let shape = new Shape(points)
+    let geometry = new ShapeGeometry(shape)
+    let roof = new Mesh(geometry, roofMaterial)
 
-    roof.rotation.set(Math.PI / 2, 0, 0);
-    roof.position.y = 250;
-    return roof;
+    roof.rotation.set(Math.PI / 2, 0, 0)
+    roof.position.y = 250
+    return roof
   }
 
-  this.addToScene = function () {
-    scene.add(floorPlane);
+  let addToScene = function() {
+    if (floorPlane) {
+      scene.add(floorPlane)
+    }
     //scene.add(roofPlane);
     // hack so we can do intersect testing
-    scene.add(room.floorPlane);
+    if (room.floorPlane) {
+      scene.add(room.floorPlane)
+    }
   }
 
-  this.removeFromScene = function () {
-    scene.remove(floorPlane);
+  let removeFromScene = function() {
+    if (floorPlane) {
+      scene.remove(floorPlane)
+    }
     //scene.remove(roofPlane);
-    scene.remove(room.floorPlane);
+    if (room.floorPlane) {
+      scene.remove(room.floorPlane)
+    }
   }
 }
 
-export default Floor;
+export default Floor

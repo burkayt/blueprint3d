@@ -1,43 +1,44 @@
+import Floor from './floor'
+import Scene from '../model/scene'
+import { Floorplan } from '../model/floorplan'
+import Controls from './controls'
 import Edge from './edge'
 
-function Floorplan(scene, floorplan, controls) {
+let FloorplanFunc: Function = function(
+  scene: Scene,
+  floorplan: Floorplan,
+  controls: Controls
+) {
+  let floors: any[] = [] // Floor from ./floor
+  let edges: any[] = [] // Edge from './edge'
 
-  let scope = this;
-
-  this.scene = scene;
-  this.floorplan = floorplan;
-  this.controls = controls;
-
-  this.floors = [];
-  this.edges = [];
-
-  floorplan.fireOnUpdatedRooms(redraw);
+  floorplan.fireOnUpdatedRooms(redraw)
 
   function redraw() {
     // clear scene
-    scope.floors.forEach((floor) => {
-      floor.removeFromScene();
-    });
+    floors.forEach(floor => {
+      floor.removeFromScene()
+    })
 
-    scope.edges.forEach((edge) => {
-      edge.remove();
-    });
-    scope.floors = [];
-    scope.edges = [];
+    edges.forEach(edge => {
+      edge.remove()
+    })
+    floors = []
+    edges = []
 
     // draw floors
-    scope.floorplan.getRooms().forEach((room) => {
-      let threeFloor = new t.BP3D.Three.Floor(scene, room);
-      scope.floors.push(threeFloor);
-      threeFloor.addToScene();
-    });
+    floorplan.getRooms().forEach(room => {
+      let threeFloor = Floor(scene, room)
+      floors.push(threeFloor)
+      threeFloor.addToScene()
+    })
 
     // draw edges
-    scope.floorplan.wallEdges().forEach((edge) => {
-      let threeEdge = Edge(scene, edge, scope.controls);
-      scope.edges.push(threeEdge);
-    });
+    floorplan.wallEdges().forEach(edge => {
+      let threeEdge = Edge(scene, edge, controls)
+      edges.push(threeEdge)
+    })
   }
 }
 
-export default Floorplan;
+export default FloorplanFunc
